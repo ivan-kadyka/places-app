@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { IDBContext } from '../database/db-context.interface';
 import { WeatherCacheService } from '../weather/weather-cache.service';
 import { OpenMeteoService } from '../weather/open-meteo.service';
 import {
@@ -14,7 +14,7 @@ import { activityScorers } from './activity-scoring';
 @Injectable()
 export class RankingsService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly dbContext: IDBContext,
     private readonly openMeteo: OpenMeteoService,
     private readonly weatherCache: WeatherCacheService,
   ) {}
@@ -31,9 +31,10 @@ export class RankingsService {
     const { id: locationId, timezone } =
       await this.weatherCache.resolveLocation(geocoding);
 
-    const location = await this.prisma.location.findUniqueOrThrow({
-      where: { id: locationId },
-    });
+    const location = await this.dbContext.locations.findById(locationId);
+    if (!location) {
+      throw new NotFoundException(`Location with ID "${locationId}" not found`);
+    }
 
     const weather = await this.weatherCache.getWeatherForLocation(
       locationId,

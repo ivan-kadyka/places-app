@@ -1,8 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Prisma } from 'prisma/generated/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { IDBContext } from '../database/db-context.interface';
 import { OpenMeteoService } from './open-meteo.service';
 import {
   DailyWeatherPoint,
@@ -28,7 +27,7 @@ export class WeatherCacheService {
   private readonly cacheTtlMs: number;
 
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly dbContext: IDBContext,
     private readonly openMeteo: OpenMeteoService,
     configService: ConfigService,
   ) {
@@ -41,10 +40,9 @@ export class WeatherCacheService {
   async resolveLocation(
     geocoding: GeocodingResult,
   ): Promise<{ id: string; timezone: string }> {
-    const location = await this.prisma.location.upsert({
-      where: { openMeteoId: geocoding.id },
-      create: {
-        openMeteoId: geocoding.id,
+    const location = await this.dbContext.locations.upsert(
+      geocoding.id,
+      {
         name: geocoding.name,
         country: geocoding.country,
         countryCode: geocoding.country_code,
@@ -54,7 +52,7 @@ export class WeatherCacheService {
         elevation: geocoding.elevation,
         timezone: geocoding.timezone,
       },
-      update: {
+      {
         name: geocoding.name,
         country: geocoding.country,
         countryCode: geocoding.country_code,
@@ -64,7 +62,7 @@ export class WeatherCacheService {
         elevation: geocoding.elevation,
         timezone: geocoding.timezone,
       },
-    });
+    );
 
     return { id: location.id, timezone: location.timezone };
   }
@@ -76,13 +74,10 @@ export class WeatherCacheService {
     timezone: string,
   ): Promise<CachedWeather> {
     const now = new Date();
-    const cached = await this.prisma.weatherSnapshot.findFirst({
-      where: {
-        locationId,
-        expiresAt: { gt: now },
-      },
-      orderBy: { fetchedAt: 'desc' },
-    });
+    const cached = await this.dbContext.weatherSnapshots.findLatestActive(
+      locationId,
+      now,
+    );
 
     if (cached) {
       const daily = deserializeDailyForecast(
@@ -116,15 +111,11 @@ export class WeatherCacheService {
     const fetchedAt = new Date();
     const expiresAt = new Date(fetchedAt.getTime() + this.cacheTtlMs);
 
-    await this.prisma.weatherSnapshot.create({
-      data: {
-        locationId,
-        fetchedAt,
-        expiresAt,
-        dailyData: serializeDailyForecast(
-          daily,
-        ) as unknown as Prisma.InputJsonValue,
-      },
+    await this.dbContext.weatherSnapshots.create({
+      locationId,
+      fetchedAt,
+      expiresAt,
+      dailyData: serializeDailyForecast(daily),
     });
 
     this.logger.log(
@@ -143,21 +134,7 @@ export class WeatherCacheService {
   @Cron(CronExpression.EVERY_6_HOURS)
   async refreshExpiredSnapshots(): Promise<void> {
     const now = new Date();
-    const staleLocations = await this.prisma.location.findMany({
-      where: {
-        snapshots: {
-          none: {
-            expiresAt: { gt: now },
-          },
-        },
-      },
-      include: {
-        snapshots: {
-          orderBy: { fetchedAt: 'desc' },
-          take: 1,
-        },
-      },
-    });
+    const staleLocations = await this.dbContext.locations.findStaleLocations(now);
 
     if (!staleLocations.length) {
       return;
