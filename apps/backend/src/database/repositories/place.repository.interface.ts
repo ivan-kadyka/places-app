@@ -8,5 +8,6 @@ export abstract class IPlaceRepository {
 }
 
 export interface ISearchRepositoryParams {
-  name: string
+  name: string,
+  count?: number,
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IPlaceSearchService } from './place-search.service.interface';
+import { IPlaceSearchService, ISearchPlacesQueryParams } from './place-search.service.interface';
 import { IPlace } from '../../weather/weather.types';
 import { IDBContext } from '../../database/db-context.interface';
 import { OpenMeteoPlaceSearchService } from './open-meteo-place-search.service';
@@ -13,15 +13,17 @@ export class PlaceSearchService implements IPlaceSearchService {
   ) {}
 
 
-  async search(query: string, count: number = 5): Promise<IPlace[]> {
+  async search(params : ISearchPlacesQueryParams): Promise<IPlace[]> {
+
+    const {query, count} = params;
     // 1. Try database first
-    const dbResults = await this.dbContext.places.search({ name: query });
+    const dbResults = await this.dbContext.places.search({ name: query, count });
     if (dbResults.length > 0) {
       return dbResults.map(placeEntityToIPlace);
     }
 
     // 2. If no results, use OpenMeteo
-    const openMeteoResults = await this.openMeteoSearchService.search(query, count);
+    const openMeteoResults = await this.openMeteoSearchService.search(params);
     if (openMeteoResults.length === 0) {
       return [];
     }

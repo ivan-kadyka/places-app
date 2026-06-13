@@ -19,7 +19,7 @@ export class PlaceApiController {
 
   @Get('search')
   async searchPlaces(@Query() query: SearchPlacesQueryDto): Promise<IPlace[]> {
-    return this.placeSearchService.search(query.query, query.count);
+    return this.placeSearchService.search(query);
   }
 }
 
