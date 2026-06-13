@@ -4,9 +4,9 @@ import {
   IPlaceActivitiesParams,
   IPlaceActivitiesResult,
   IActivity,
-} from './activities-ranking.service.interface';
+} from '../place-activities/activities-ranking.service.interface';
 import { IWeatherService } from '../weather/weather.service.interface';
-import { IActivityScoreService } from './weather-scoring.service.interface';
+import { IActivityScoreService } from '../place-activities/weather-scoring.service.interface';
 import { ACTIVITIES, RecommendationLevel } from '../weather/weather.types';
 
 @Injectable()

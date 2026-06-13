@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IPlaceSearchService } from './place-search.service.interface';
 import { IPlace } from '../../weather/weather.types';
 
@@ -13,7 +13,6 @@ interface GeocodingResult {
   timezone: string;
   country_code: string;
   country: string;
-  admin1?: string;
 }
 
 interface GeocodingResponse {
@@ -22,8 +21,7 @@ interface GeocodingResponse {
 
 @Injectable()
 export class OpenMeteoPlaceSearchService implements IPlaceSearchService {
-  private readonly logger = new Logger(OpenMeteoPlaceSearchService.name);
-
+ 
   async search(query: string, count: number = 5): Promise<IPlace[]> {
     const params = new URLSearchParams({
       name: query.trim(),
@@ -33,7 +31,6 @@ export class OpenMeteoPlaceSearchService implements IPlaceSearchService {
     });
 
     const url = `${GEOCODING_BASE}?${params.toString()}`;
-    this.logger.debug(`Searching places: ${url}`);
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -55,7 +52,7 @@ export class OpenMeteoPlaceSearchService implements IPlaceSearchService {
       elevation: result.elevation,
       timezone: result.timezone,
       countryCode: result.country_code,
-      country: result.country,
+      country: result.country
     }));
   }
 }

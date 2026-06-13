@@ -50,6 +50,8 @@ export interface IPlace {
   elevation: number;
   timezone: string;
   countryCode: string;
+  country: string;
+  admin1?: string;
 }
 
 export interface ICoordinates {
