@@ -1,7 +1,7 @@
 import { IPlaceRepository, ISearchRepositoryParams } from '../repositories/place.repository.interface';
 import { PrismaClient } from 'prisma/generated/client';
 import { IPlace } from "src/place/models/IPlace";
-import { placeEntityToIPlace } from 'src/place/models/utils/placeEntityToIPlace';
+import { placeEntityToIPlace } from 'src/database/entities/utils/placeEntityToIPlace';
 
 export class PrismaPlaceRepository implements IPlaceRepository {
   constructor(private readonly prisma: PrismaClient) {}

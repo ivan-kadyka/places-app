@@ -1,16 +1,16 @@
 import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
-import { Coordinates } from './coordinates.dto';
+import { CoordinatesDto } from './coordinates.dto';
 
 @ObjectType()
-export class Place {
+export class PlaceDto {
   @Field(() => ID)
   id: string;
 
   @Field()
   name: string;
 
-  @Field(() => Coordinates)
-  coordinate: Coordinates;
+  @Field(() => CoordinatesDto)
+  coordinate: CoordinatesDto;
 
   @Field()
   timezone: string;

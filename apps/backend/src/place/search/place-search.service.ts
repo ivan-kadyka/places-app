@@ -14,7 +14,7 @@ export class PlaceSearchService implements IPlaceSearchService {
 
   async search(params : ISearchPlacesQueryParams): Promise<IPlace[]> {
 
-    const {query, count} = params;
+    const {placeName: query, count} = params;
     // 1. Try database first
     const places = await this.dbContext.places.search({ name: query, count });
 

@@ -6,7 +6,7 @@ registerEnumType(RecommendationLevel, {
 });
 
 @ObjectType()
-export class ActivityScore {
+export class ActivityScoreDto {
   @Field(() => RecommendationLevel)
   type: RecommendationLevel;
 

@@ -1,8 +1,8 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { IPlaceService } from '../place-activities/activities-ranking.service.interface';
 import { IPlaceSearchService } from './search/place-search.service.interface';
-import { Place } from './dto/place.dto';
-import { PlaceDetailsResult } from './dto/place-details-result.dto';
+import { PlaceDto } from './dto/place.dto';
+import { PlaceDetailsDto } from './dto/place-details.dto';
 import { Int } from '@nestjs/graphql';
 
 @Resolver()
@@ -12,16 +12,16 @@ export class PlaceApiResolver {
     private readonly placeSearchService: IPlaceSearchService,
   ) {}
 
-  @Query(() => PlaceDetailsResult)
+  @Query(() => PlaceDetailsDto)
   getPlaceDetails(@Args('place') place: string) {
     return this.placeService.getDetails({ placeName: place });
   }
 
-  @Query(() => [Place])
+  @Query(() => [PlaceDto])
   async searchPlaces(
-    @Args('query') query: string,
+    @Args('placeName') placeName: string,
     @Args('count', { type: () => Int, nullable: true }) count?: number,
-  ): Promise<Place[]> {
-    return this.placeSearchService.search({ query, count });
+  ): Promise<PlaceDto[]> {
+    return this.placeSearchService.search({ placeName: placeName, count });
   }
 }

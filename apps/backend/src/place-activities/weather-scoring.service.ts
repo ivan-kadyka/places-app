@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { IActivityScoreService, IActivityScore } from './weather-scoring.service.interface';
-import { DailyWeatherPoint, RecommendationLevel, ACTIVITIES } from '../weather/weather.types';
+import { DailyWeatherPoint, RecommendationLevel } from '../weather/weather.types';
 import { activityScorers } from './activity-scoring';
+import { ACTIVITIES } from 'src/place/models/ActivityType';
 
 @Injectable()
 export class WeatherScoringService implements IActivityScoreService {

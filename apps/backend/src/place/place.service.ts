@@ -7,8 +7,9 @@ import {
 } from '../place-activities/activities-ranking.service.interface';
 import { IWeatherService } from '../weather/weather.service.interface';
 import { IActivityScoreService } from '../place-activities/weather-scoring.service.interface';
-import { ACTIVITIES, RecommendationLevel } from '../weather/weather.types';
+import { RecommendationLevel } from '../weather/weather.types';
 import { IPlaceSearchService } from 'src/place/search/place-search.service.interface';
+import { ACTIVITIES } from 'src/place/models/ActivityType';
 
 @Injectable()
 export class PlaceService implements IPlaceService {
@@ -24,7 +25,7 @@ export class PlaceService implements IPlaceService {
 
     const placeName = params.placeName
 
-    const searchResult = await this.searchService.search({ query: placeName, count: 1 });
+    const searchResult = await this.searchService.search({ placeName: placeName, count: 1 });
 
     const place = searchResult[0]
     

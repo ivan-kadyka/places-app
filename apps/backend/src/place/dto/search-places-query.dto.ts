@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 
 export class SearchPlacesQueryDto {
   @IsString()
-  query: string;
+  placeName: string;
 
   @IsOptional()
   @IsInt()

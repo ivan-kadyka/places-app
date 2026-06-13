@@ -1,7 +1,7 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 
 @ObjectType()
-export class DateRange {
+export class DateRangeDto {
   @Field()
   from: Date;
 

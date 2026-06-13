@@ -1,11 +1,5 @@
-export enum ActivityType {
-  SKIING = 'skiing',
-  SURFING = 'surfing',
-  OUTDOOR_SIGHTSEEING = 'outdoor_sightseeing',
-  INDOOR_SIGHTSEEING = 'indoor_sightseeing',
-}
+import { ActivityType } from "src/place/models/ActivityType";
 
-export const ACTIVITIES = Object.values(ActivityType);
 
 export interface DailyWeatherPoint {
   date: string;

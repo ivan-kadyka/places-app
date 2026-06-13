@@ -3,14 +3,13 @@ import { IActivitiesRankingService } from './activities-ranking.service.interfac
 import { IWeatherService } from '../weather/weather.service.interface';
 import { IActivityScoreService } from './weather-scoring.service.interface';
 import {
-  ACTIVITIES,
-  ActivityType,
   ActivityDayRanking,
   ActivityRanking,
   DailyWeatherPoint,
   RecommendationLevel,
   RankingsResponse,
 } from '../weather/weather.types';
+import { ACTIVITIES, ActivityType } from "src/place/models/ActivityType";
 import { IDBContext } from 'src/database/db-context.interface';
 
 @Injectable()

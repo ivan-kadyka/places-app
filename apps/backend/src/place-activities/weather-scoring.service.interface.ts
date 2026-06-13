@@ -1,8 +1,8 @@
 import {
-  ActivityType,
   DailyWeatherPoint,
   RecommendationLevel,
 } from '../weather/weather.types';
+import { ActivityType } from "src/place/models/ActivityType";
 
 export interface IActivityScore {
   type: ActivityType;
