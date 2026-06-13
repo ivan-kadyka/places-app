@@ -13,15 +13,15 @@ export class PlaceApiResolver {
   ) {}
 
   @Query(() => PlaceDetailsDto)
-  getPlaceDetails(@Args('place') place: string) {
-    return this.placeService.getDetails({ placeName: place });
+  getPlaceDetails(@Args('name') name: string) {
+    return this.placeService.getDetails({ name: name });
   }
 
   @Query(() => [PlaceDto])
   async searchPlaces(
-    @Args('placeName') placeName: string,
+    @Args('name') name: string,
     @Args('count', { type: () => Int, nullable: true }) count?: number,
   ): Promise<PlaceDto[]> {
-    return this.placeSearchService.search({ placeName: placeName, count });
+    return this.placeSearchService.search({ name : name, count });
   }
 }

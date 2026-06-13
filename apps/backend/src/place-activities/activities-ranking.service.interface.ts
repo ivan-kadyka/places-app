@@ -10,7 +10,7 @@ export abstract class IActivitiesRankingService {
 }
 
 export interface IPlaceDetailsParams {
-  placeName: string;
+  name: string;
 }
 
 export interface IActivity {

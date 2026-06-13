@@ -14,7 +14,7 @@ export class PlaceSearchService implements IPlaceSearchService {
 
   async search(params : ISearchPlacesQueryParams): Promise<IPlace[]> {
 
-    const {placeName: query, count} = params;
+    const {name: query, count} = params;
     // 1. Try database first
     const places = await this.dbContext.places.search({ name: query, count });
 
@@ -28,7 +28,7 @@ export class PlaceSearchService implements IPlaceSearchService {
       return [];
     }
 
-      // 3. Save to database using saveMany
+    // 3. Save to database
     const savedPlaces = await this.dbContext.places.save(openMeteoResults);
 
     return savedPlaces;

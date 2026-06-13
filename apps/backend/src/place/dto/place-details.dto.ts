@@ -8,7 +8,7 @@ export class PlaceDetailsDto {
   id: string;
 
   @Field()
-  placeName: string;
+  name: string;
 
   @Field(() => DateRangeDto)
   dateRange: DateRangeDto;

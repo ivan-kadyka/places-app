@@ -23,9 +23,9 @@ export class PlaceService implements IPlaceService {
     params: IPlaceDetailsParams,
   ): Promise<IPlaceDetailsResult> {
 
-    const placeName = params.placeName
+    const placeName = params.name
 
-    const searchResult = await this.searchService.search({ placeName: placeName, count: 1 });
+    const searchResult = await this.searchService.search({ name: placeName, count: 1 });
 
     const place = searchResult[0]
     

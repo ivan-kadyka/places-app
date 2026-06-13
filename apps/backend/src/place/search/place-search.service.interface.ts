@@ -1,8 +1,8 @@
 import { IPlace } from "src/place/models/IPlace";
 
 export interface ISearchPlacesQueryParams {
-  placeName: string;
-  country_code?: string;
+  name: string;
+  countryCode?: string;
   count?: number;
 }
 
