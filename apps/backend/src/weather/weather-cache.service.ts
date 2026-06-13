@@ -112,7 +112,7 @@ export class WeatherCacheService {
     const expiresAt = new Date(fetchedAt.getTime() + this.cacheTtlMs);
 
     await this.dbContext.weatherSnapshots.create({
-      locationId,
+      placeId: locationId,
       fetchedAt,
       expiresAt,
       dailyData: serializeDailyForecast(daily),

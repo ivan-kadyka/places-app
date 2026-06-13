@@ -5,10 +5,10 @@ import { PrismaClient, Prisma } from 'prisma/generated/client';
 export class PrismaWeatherSnapshotRepository implements IWeatherSnapshotRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async findLatestActive(locationId: string, now: Date): Promise<WeatherSnapshotEntity | null> {
+  async findLatestActive(placeId: string, now: Date): Promise<WeatherSnapshotEntity | null> {
     const result = await this.prisma.weatherSnapshot.findFirst({
       where: {
-        locationId,
+        placeId: placeId,
         expiresAt: { gt: now },
       },
       orderBy: { fetchedAt: 'desc' },
@@ -20,7 +20,7 @@ export class PrismaWeatherSnapshotRepository implements IWeatherSnapshotReposito
 
     return {
       id: result.id,
-      locationId: result.locationId,
+      placeId: result.placeId,
       fetchedAt: result.fetchedAt,
       expiresAt: result.expiresAt,
       dailyData: result.dailyData,
@@ -30,7 +30,7 @@ export class PrismaWeatherSnapshotRepository implements IWeatherSnapshotReposito
   async create(data: Omit<WeatherSnapshotEntity, 'id' | 'fetchedAt'> & { fetchedAt?: Date }): Promise<WeatherSnapshotEntity> {
     const result = await this.prisma.weatherSnapshot.create({
       data: {
-        locationId: data.locationId,
+        placeId: data.placeId,
         fetchedAt: data.fetchedAt,
         expiresAt: data.expiresAt,
         dailyData: data.dailyData as Prisma.InputJsonValue,
@@ -39,7 +39,7 @@ export class PrismaWeatherSnapshotRepository implements IWeatherSnapshotReposito
 
     return {
       id: result.id,
-      locationId: result.locationId,
+      placeId: result.placeId,
       fetchedAt: result.fetchedAt,
       expiresAt: result.expiresAt,
       dailyData: result.dailyData,

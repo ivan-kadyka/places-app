@@ -1,6 +1,6 @@
 export interface WeatherSnapshotEntity {
   id: string;
-  locationId: string;
+  placeId: string;
   fetchedAt: Date;
   expiresAt: Date;
   dailyData: any;

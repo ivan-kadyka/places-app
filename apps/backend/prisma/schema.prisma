@@ -8,13 +8,11 @@ datasource db {
   provider = "postgresql"
 }
 
-model Location {
+model Place {
   id           String          @id @default(cuid())
-  openMeteoId  Int             @unique
+  openMeteoId  Int?            
   name         String
-  country      String
   countryCode  String
-  admin1       String?
   latitude     Float
   longitude    Float
   elevation    Float?
@@ -28,13 +26,12 @@ model Location {
 
 model WeatherSnapshot {
   id         String   @id @default(cuid())
-  locationId String
-  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  placeId String
+  place   Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
   fetchedAt  DateTime @default(now())
   expiresAt  DateTime
-  /// Raw daily forecast payload from Open-Meteo (7 days)
   dailyData  Json
 
-  @@index([locationId, fetchedAt(sort: Desc)])
+  @@index([placeId, fetchedAt(sort: Desc)])
   @@index([expiresAt])
 }
