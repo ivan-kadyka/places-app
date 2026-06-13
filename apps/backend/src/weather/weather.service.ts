@@ -21,12 +21,7 @@ export class WeatherService implements IWeatherService {
       throw new NotFoundException('Place entity has no openMeteoId');
     }
 
-    const weather = await this.weatherCache.getWeatherForLocation(
-      locationId,
-      latitude,
-      longitude,
-      timezone,
-    );
+    const weather = await this.weatherCache.getWeatherForPlace(place);
 
     return {
       location: {

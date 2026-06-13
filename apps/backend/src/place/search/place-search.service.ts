@@ -27,8 +27,8 @@ export class PlaceSearchService implements IPlaceSearchService {
     }
 
       // 3. Save to database using saveMany
-    await this.dbContext.places.saveMany(openMeteoResults);
+    const savedPlaces = await this.dbContext.places.saveMany(openMeteoResults);
 
-    return openMeteoResults;
+    return savedPlaces.map(placeEntityToIPlace);
   }
 }

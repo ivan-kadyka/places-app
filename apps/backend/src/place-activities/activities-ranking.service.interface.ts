@@ -9,8 +9,8 @@ export abstract class IActivitiesRankingService {
   ): Promise<RankingsResponse>;
 }
 
-export interface IPlaceActivitiesParams {
-  place: string;
+export interface IPlaceDetailsParams {
+  placeName: string;
 }
 
 export interface IActivity {
@@ -22,9 +22,9 @@ export interface IActivity {
   };
 }
 
-export interface IPlaceActivitiesResult {
+export interface IPlaceDetailsResult {
   id: string;
-  place: string;
+  placeName: string;
   dateRange: {
     from: Date;
     to: Date;
@@ -33,7 +33,7 @@ export interface IPlaceActivitiesResult {
 }
 
 export abstract class IPlaceService {
-  abstract getActivities(
-    params: IPlaceActivitiesParams,
-  ): Promise<IPlaceActivitiesResult>;
+  abstract getDetails(
+    params: IPlaceDetailsParams,
+  ): Promise<IPlaceDetailsResult>;
 }

@@ -4,6 +4,7 @@ import { IDBContext } from '../database/db-context.interface';
 import { OpenMeteoService } from './open-meteo.service';
 import {
   DailyWeatherPoint,
+  IPlace,
   OpenMeteoDailyForecast,
 } from './weather.types';
 import {
@@ -12,7 +13,7 @@ import {
 } from './forecast.utils';
 
 export interface CachedWeather {
-  locationId: string;
+  placeId: string;
   fetchedAt: Date;
   expiresAt: Date;
   daily: DailyWeatherPoint[];
@@ -37,15 +38,14 @@ export class WeatherCacheService {
 
 
 
-  async getWeatherForLocation(
-    locationId: string,
-    latitude: number,
-    longitude: number,
-    timezone: string,
+  async getWeatherForPlace(
+    place: IPlace
   ): Promise<CachedWeather> {
     const now = new Date();
+
+
     const cached = await this.dbContext.weatherSnapshots.findLatestActive(
-      locationId,
+      place.id,
       now,
     );
 
@@ -55,7 +55,7 @@ export class WeatherCacheService {
       );
 
       return {
-        locationId,
+        placeId: place.id,
         fetchedAt: cached.fetchedAt,
         expiresAt: cached.expiresAt,
         daily,
@@ -63,15 +63,15 @@ export class WeatherCacheService {
       };
     }
 
-    return this.refreshWeather(locationId, latitude, longitude, timezone);
+    return this.refreshWeather(place);
   }
 
   async refreshWeather(
-    locationId: string,
-    latitude: number,
-    longitude: number,
-    timezone: string,
+    place: IPlace
   ): Promise<CachedWeather> {
+
+    const {coordinate: {latitude, longitude}, timezone}  = place
+
     const forecast = await this.openMeteo.fetchForecast(
       latitude,
       longitude,
@@ -82,18 +82,18 @@ export class WeatherCacheService {
     const expiresAt = new Date(fetchedAt.getTime() + this.cacheTtlMs);
 
     await this.dbContext.weatherSnapshots.create({
-      placeId: locationId,
+      placeId: place.id,
       fetchedAt,
       expiresAt,
       dailyData: serializeDailyForecast(daily),
     });
 
     this.logger.log(
-      `Refreshed weather cache for location ${locationId} (expires ${expiresAt.toISOString()})`,
+      `Refreshed weather cache for location ${place.id} (expires ${expiresAt.toISOString()})`,
     );
 
     return {
-      locationId,
+      placeId: place.id,
       fetchedAt,
       expiresAt,
       daily,

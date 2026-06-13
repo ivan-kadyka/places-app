@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   IPlaceService,
-  IPlaceActivitiesParams,
-  IPlaceActivitiesResult,
+  IPlaceDetailsParams,
+  IPlaceDetailsResult,
   IActivity,
 } from '../place-activities/activities-ranking.service.interface';
 import { IWeatherService } from '../weather/weather.service.interface';
@@ -18,11 +18,11 @@ export class PlaceService implements IPlaceService {
     private readonly searchService: IPlaceSearchService,
   ) {}
 
-  async getActivities(
-    params: IPlaceActivitiesParams,
-  ): Promise<IPlaceActivitiesResult> {
+  async getDetails(
+    params: IPlaceDetailsParams,
+  ): Promise<IPlaceDetailsResult> {
 
-    const placeName = params.place
+    const placeName = params.placeName
 
     const searchResult = await this.searchService.search(placeName, 1);
 
@@ -78,9 +78,11 @@ export class PlaceService implements IPlaceService {
       weatherForecast.daily[weatherForecast.daily.length - 1].date,
     );
 
+     activities.sort((a, b) => b.score.percentage - a.score.percentage)
+
     return {
       id: weatherForecast.location.id.toString(),
-      place: weatherForecast.location.name,
+      placeName: weatherForecast.location.name,
       dateRange: {
         from: fromDate,
         to: toDate,

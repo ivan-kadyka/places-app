@@ -14,7 +14,7 @@ export class PlaceApiController {
 
   @Get('details')
   getPlaceActivities(@Query() query: GetPlaceActivitiesQueryDto) {
-    return this.placeService.getActivities({ place: query.place });
+    return this.placeService.getDetails({ placeName: query.place });
   }
 
   @Get('search')
