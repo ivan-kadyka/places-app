@@ -1,8 +1,10 @@
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DatabaseModule } from './database/database.module';
 import { RankingsModule } from './place/place.module';
+import { GraphQLModule } from '@nestjs/graphql';
 
 @Module({
   imports: [
@@ -10,6 +12,13 @@ import { RankingsModule } from './place/place.module';
     ScheduleModule.forRoot(),
     DatabaseModule,
     RankingsModule,
-  ],
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true,
+      debug: true,
+      playground: true,
+    }),
+     ],
+
 })
 export class AppModule {}
