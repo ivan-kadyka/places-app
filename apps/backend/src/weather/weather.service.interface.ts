@@ -18,7 +18,7 @@ export interface WeatherForecastResponse {
 }
 
 export abstract class IWeatherService {
-  abstract getWeatherForCity(
+  abstract getWeatherByPlace(
     city: string,
     countryCode?: string,
   ): Promise<WeatherForecastResponse>;

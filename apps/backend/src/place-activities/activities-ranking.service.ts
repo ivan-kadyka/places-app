@@ -23,7 +23,7 @@ export class ActivitiesRankingService implements IActivitiesRankingService {
     city: string,
     countryCode?: string,
   ): Promise<RankingsResponse> {
-    const weatherForecast = await this.weatherService.getWeatherForCity(city, countryCode);
+    const weatherForecast = await this.weatherService.getWeatherByPlace(city, countryCode);
     const { location, daily, fetchedAt, expiresAt, cacheHit } = weatherForecast;
 
     const rankings = ACTIVITIES.map((activity) =>

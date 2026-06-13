@@ -62,7 +62,7 @@ describe('ActivitiesRankingService', () => {
 
   beforeEach(async () => {
     mockWeatherService = {
-      getWeatherForCity: jest.fn(),
+      getWeatherByPlace: jest.fn(),
     };
 
     mockScoringService = {
@@ -129,7 +129,7 @@ describe('ActivitiesRankingService', () => {
       },
     ];
 
-    mockWeatherService.getWeatherForCity.mockResolvedValue({
+    mockWeatherService.getWeatherByPlace.mockResolvedValue({
       location: mockLocation,
       fetchedAt: new Date('2026-06-13T12:00:00Z'),
       expiresAt: new Date('2026-06-13T18:00:00Z'),

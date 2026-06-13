@@ -12,7 +12,7 @@ export class WeatherService implements IWeatherService {
     private readonly weatherCache: WeatherCacheService,
   ) {}
 
-  async getWeatherForCity(
+  async getWeatherByPlace(
     city: string,
     countryCode?: string,
   ): Promise<WeatherForecastResponse> {

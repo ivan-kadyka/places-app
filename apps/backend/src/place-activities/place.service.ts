@@ -19,7 +19,7 @@ export class PlaceService implements IPlaceService {
   async getActivities(
     params: IPlaceActivitiesParams,
   ): Promise<IPlaceActivitiesResult> {
-    const weatherForecast = await this.weatherService.getWeatherForCity(
+    const weatherForecast = await this.weatherService.getWeatherByPlace(
       params.place,
     );
 

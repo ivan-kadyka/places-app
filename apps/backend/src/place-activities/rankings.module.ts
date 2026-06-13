@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { RankingsController } from './rankings.controller';
 import { PlaceInfoController } from './place-info.controller';
 import { IActivityScoreService } from './weather-scoring.service.interface';
 import { WeatherScoringService } from './weather-scoring.service';
@@ -13,7 +12,7 @@ import { WeatherModule } from '../weather/weather.module';
 
 @Module({
   imports: [WeatherModule],
-  controllers: [RankingsController, PlaceInfoController],
+  controllers: [PlaceInfoController],
   providers: [
     {
       provide: IActivityScoreService,
