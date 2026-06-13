@@ -1,11 +1,11 @@
-export enum Activity {
+export enum ActivityType {
   SKIING = 'skiing',
   SURFING = 'surfing',
   OUTDOOR_SIGHTSEEING = 'outdoor_sightseeing',
   INDOOR_SIGHTSEEING = 'indoor_sightseeing',
 }
 
-export const ACTIVITIES = Object.values(Activity);
+export const ACTIVITIES = Object.values(ActivityType);
 
 export interface DailyWeatherPoint {
   date: string;
@@ -79,7 +79,7 @@ export interface ActivityDayRanking {
 }
 
 export interface ActivityRanking {
-  activity: Activity;
+  type: ActivityType;
   days: ActivityDayRanking[];
 }
 

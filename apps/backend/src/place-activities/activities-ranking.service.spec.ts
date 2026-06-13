@@ -3,7 +3,11 @@ import { ActivitiesRankingService } from './activities-ranking.service';
 import { IWeatherService } from '../weather/weather.service.interface';
 import { IActivityScoreService } from './weather-scoring.service.interface';
 import { WeatherScoringService } from './weather-scoring.service';
-import { Activity, DailyWeatherPoint, RecommendationLevel } from '../weather/weather.types';
+import {
+  ActivityType,
+  DailyWeatherPoint,
+  RecommendationLevel,
+} from '../weather/weather.types';
 
 describe('WeatherScoringService', () => {
   let scoringService: WeatherScoringService;
@@ -31,15 +35,23 @@ describe('WeatherScoringService', () => {
       precipitationProbabilityMax: 0,
     };
 
-    const location = { latitude: 40.7128, longitude: -74.0060, timezone: 'America/New_York' };
+    const location = {
+      latitude: 40.7128,
+      longitude: -74.006,
+      timezone: 'America/New_York',
+    };
     const scores = scoringService.scoreActivities(location, dummyWeather);
 
     expect(scores).toHaveLength(4);
-    
-    const outdoor = scores.find((s) => s.name === Activity.OUTDOOR_SIGHTSEEING);
+
+    const outdoor = scores.find(
+      (s) => s.type === ActivityType.OUTDOOR_SIGHTSEEING,
+    );
     expect(outdoor).toBeDefined();
     expect(outdoor!.score.percentage).toBeGreaterThan(50);
-    expect(outdoor!.score.type).toBeGreaterThanOrEqual(RecommendationLevel.Average);
+    expect(outdoor!.score.type).toBeGreaterThanOrEqual(
+      RecommendationLevel.Average,
+    );
   });
 });
 
@@ -51,11 +63,11 @@ describe('ActivitiesRankingService', () => {
   beforeEach(async () => {
     mockWeatherService = {
       getWeatherForCity: jest.fn(),
-    } as any;
+    };
 
     mockScoringService = {
       scoreActivities: jest.fn(),
-    } as any;
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -71,7 +83,9 @@ describe('ActivitiesRankingService', () => {
       ],
     }).compile();
 
-    rankingService = module.get<ActivitiesRankingService>(ActivitiesRankingService);
+    rankingService = module.get<ActivitiesRankingService>(
+      ActivitiesRankingService,
+    );
   });
 
   it('should get rankings for city, score and rank them', async () => {
@@ -123,42 +137,42 @@ describe('ActivitiesRankingService', () => {
       daily: mockDaily,
     });
 
-    mockScoringService.scoreActivities.mockImplementation((loc, day) => {
+    mockScoringService.scoreActivities.mockImplementation((location, day) => {
       if (day.date === '2026-06-15') {
         return [
           {
-            name: Activity.OUTDOOR_SIGHTSEEING,
+            type: ActivityType.OUTDOOR_SIGHTSEEING,
             score: { type: RecommendationLevel.Ideal, percentage: 90 },
           },
           {
-            name: Activity.SKIING,
+            type: ActivityType.SKIING,
             score: { type: RecommendationLevel.Unsuitable, percentage: 10 },
           },
           {
-            name: Activity.SURFING,
+            type: ActivityType.SURFING,
             score: { type: RecommendationLevel.Poor, percentage: 30 },
           },
           {
-            name: Activity.INDOOR_SIGHTSEEING,
+            type: ActivityType.INDOOR_SIGHTSEEING,
             score: { type: RecommendationLevel.Average, percentage: 50 },
           },
         ];
       } else {
         return [
           {
-            name: Activity.OUTDOOR_SIGHTSEEING,
+            type: ActivityType.OUTDOOR_SIGHTSEEING,
             score: { type: RecommendationLevel.Poor, percentage: 30 },
           },
           {
-            name: Activity.SKIING,
+            type: ActivityType.SKIING,
             score: { type: RecommendationLevel.Unsuitable, percentage: 5 },
           },
           {
-            name: Activity.SURFING,
+            type: ActivityType.SURFING,
             score: { type: RecommendationLevel.Unsuitable, percentage: 15 },
           },
           {
-            name: Activity.INDOOR_SIGHTSEEING,
+            type: ActivityType.INDOOR_SIGHTSEEING,
             score: { type: RecommendationLevel.Good, percentage: 70 },
           },
         ];
@@ -170,9 +184,11 @@ describe('ActivitiesRankingService', () => {
     expect(response.location.name).toBe('Paris');
     expect(response.rankings).toHaveLength(4);
 
-    const outdoorRanking = response.rankings.find((r) => r.activity === Activity.OUTDOOR_SIGHTSEEING);
+    const outdoorRanking = response.rankings.find(
+      (r) => r.type === ActivityType.OUTDOOR_SIGHTSEEING,
+    );
     expect(outdoorRanking).toBeDefined();
-    
+
     const day1 = outdoorRanking!.days.find((d) => d.date === '2026-06-15');
     const day2 = outdoorRanking!.days.find((d) => d.date === '2026-06-16');
 

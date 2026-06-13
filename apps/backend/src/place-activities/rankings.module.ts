@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
 import { RankingsController } from './rankings.controller';
+import { PlaceInfoController } from './place-info.controller';
 import { IActivityScoreService } from './weather-scoring.service.interface';
 import { WeatherScoringService } from './weather-scoring.service';
-import { IActivitiesRankingService } from './activities-ranking.service.interface';
+import { IActivitiesRankingService, IPlaceService } from './activities-ranking.service.interface';
 import { ActivitiesRankingService } from './activities-ranking.service';
+import { PlaceService } from './place.service';
 import { WeatherModule } from '../weather/weather.module';
 
 @Module({
   imports: [WeatherModule],
-  controllers: [RankingsController],
+  controllers: [RankingsController, PlaceInfoController],
   providers: [
     {
       provide: IActivityScoreService,
@@ -18,7 +20,11 @@ import { WeatherModule } from '../weather/weather.module';
       provide: IActivitiesRankingService,
       useClass: ActivitiesRankingService,
     },
+    {
+      provide: IPlaceService,
+      useClass: PlaceService,
+    },
   ],
-  exports: [IActivitiesRankingService],
+  exports: [IActivitiesRankingService, IPlaceService],
 })
 export class RankingsModule {}

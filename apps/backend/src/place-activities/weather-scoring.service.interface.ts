@@ -1,7 +1,11 @@
-import { DailyWeatherPoint, RecommendationLevel } from '../weather/weather.types';
+import {
+  ActivityType,
+  DailyWeatherPoint,
+  RecommendationLevel,
+} from '../weather/weather.types';
 
 export interface IActivityScore {
-  name: string;
+  type: ActivityType;
   score: {
     type: RecommendationLevel;
     percentage: number;

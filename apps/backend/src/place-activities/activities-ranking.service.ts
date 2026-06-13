@@ -4,7 +4,7 @@ import { IWeatherService } from '../weather/weather.service.interface';
 import { IActivityScoreService } from './weather-scoring.service.interface';
 import {
   ACTIVITIES,
-  Activity,
+  ActivityType,
   ActivityDayRanking,
   ActivityRanking,
   DailyWeatherPoint,
@@ -48,7 +48,7 @@ export class ActivitiesRankingService implements IActivitiesRankingService {
   }
 
   private rankDaysForActivity(
-    activity: Activity,
+    activity: ActivityType,
     days: DailyWeatherPoint[],
     location: { latitude: number; longitude: number; timezone: string },
   ): ActivityRanking {
@@ -83,7 +83,7 @@ export class ActivitiesRankingService implements IActivitiesRankingService {
     rankedDays.sort((a, b) => a.date.localeCompare(b.date));
 
     return {
-      activity,
+      type: activity,
       days: rankedDays,
     };
   }
