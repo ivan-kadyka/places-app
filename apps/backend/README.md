@@ -1,98 +1,100 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Weather Rankings API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS backend that ranks the next 7 days for outdoor activities based on [Open-Meteo](https://open-meteo.com/) forecasts. Weather data is persisted in PostgreSQL and refreshed on a TTL schedule instead of calling the API on every request.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Activities
 
-## Description
+| Activity | Scoring highlights |
+| --- | --- |
+| **Skiing** | Cold temps, snowfall, snow weather codes |
+| **Surfing** | Moderate wind (proxy for swell), mild temps, dry conditions |
+| **Outdoor sightseeing** | Clear skies, mild temps, low precipitation, sunshine |
+| **Indoor sightseeing** | Rain, storms, extreme temps (inverse of ideal outdoor days) |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Each activity returns all 7 forecast days sorted by date, with a **rank** (1 = best day) and **score** (0–100).
 
-## Project setup
+## Setup
 
 ```bash
-$ pnpm install
+# From apps/backend
+cp .env.example .env
+docker compose up -d
+pnpm db:generate
+pnpm db:migrate
+pnpm dev
 ```
 
-## Compile and run the project
+The API listens on `http://localhost:8000`.
+
+## API
+
+### `GET /rankings?city={name}&country={code}`
+
+Returns activity rankings for the next 7 days.
+
+**Query parameters**
+
+| Param | Required | Description |
+| --- | --- | --- |
+| `city` | yes | City or town name (min 2 chars) |
+| `country` | no | ISO 3166-1 alpha-2 country code to disambiguate (e.g. `US`, `FR`) |
+
+**Example**
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+curl "http://localhost:8000/rankings?city=Chamonix&country=FR"
+curl "http://localhost:8000/rankings?city=Biarritz&country=FR"
+curl "http://localhost:8000/rankings?city=Paris&country=FR"
 ```
 
-## Run tests
+**Sample response**
 
-```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+```json
+{
+  "location": {
+    "name": "Paris",
+    "country": "France",
+    "countryCode": "FR",
+    "latitude": 48.85341,
+    "longitude": 2.3488,
+    "timezone": "Europe/Paris"
+  },
+  "forecastFetchedAt": "2026-06-13T10:00:00.000Z",
+  "forecastExpiresAt": "2026-06-13T16:00:00.000Z",
+  "cacheHit": false,
+  "rankings": [
+    {
+      "activity": "skiing",
+      "days": [
+        { "date": "2026-06-13", "rank": 3, "score": 12.5, "weatherCode": 3, "temperatureMax": 22, "temperatureMin": 14, "precipitationSum": 0 }
+      ]
+    }
+  ]
+}
 ```
 
-## Deployment
+## Data model & caching
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+```
+Location ──< WeatherSnapshot
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- **Location** — geocoded city/town from Open-Meteo Geocoding API (upserted on first request).
+- **WeatherSnapshot** — 7-day daily forecast JSON with `fetchedAt` and `expiresAt`.
 
-## Resources
+**Refresh strategy**
 
-Check out a few resources that may come in handy when working with NestJS:
+1. **On read** — if a valid (non-expired) snapshot exists, serve from DB (`cacheHit: true`). Otherwise fetch from Open-Meteo and store a new snapshot.
+2. **Background cron** — every 6 hours, refresh locations whose cache has expired.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Configure TTL via `WEATHER_CACHE_TTL_HOURS` (default: 6).
 
-## Support
+## Scripts
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Command | Description |
+| --- | --- |
+| `pnpm dev` | Start in watch mode |
+| `pnpm build` | Compile |
+| `pnpm test` | Unit tests |
+| `pnpm db:generate` | Generate Prisma client |
+| `pnpm db:migrate` | Run migrations |

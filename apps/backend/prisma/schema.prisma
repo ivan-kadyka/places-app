@@ -1,15 +1,40 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "generated"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+model Location {
+  id           String          @id @default(cuid())
+  openMeteoId  Int             @unique
+  name         String
+  country      String
+  countryCode  String
+  admin1       String?
+  latitude     Float
+  longitude    Float
+  elevation    Float?
+  timezone     String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  snapshots    WeatherSnapshot[]
 
+  @@index([name, countryCode])
+}
+
+model WeatherSnapshot {
+  id         String   @id @default(cuid())
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  fetchedAt  DateTime @default(now())
+  expiresAt  DateTime
+  /// Raw daily forecast payload from Open-Meteo (7 days)
+  dailyData  Json
+
+  @@index([locationId, fetchedAt(sort: Desc)])
+  @@index([expiresAt])
+}
