@@ -1,5 +1,5 @@
 import { PlaceEntity } from "src/database/entities/place.entity";
-import { IPlace } from "src/weather/weather.types";
+import { IPlace } from "src/place/models/IPlace";
 
   export function placeEntityToIPlace(entity: PlaceEntity): IPlace {
 

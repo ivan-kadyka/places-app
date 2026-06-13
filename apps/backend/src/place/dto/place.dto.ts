@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
-import { Coordinates } from './coordinates.model';
+import { Coordinates } from './coordinates.dto';
 
 @ObjectType()
 export class Place {

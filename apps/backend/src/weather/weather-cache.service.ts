@@ -4,9 +4,9 @@ import { IDBContext } from '../database/db-context.interface';
 import { OpenMeteoService } from './open-meteo.service';
 import {
   DailyWeatherPoint,
-  IPlace,
   OpenMeteoDailyForecast,
 } from './weather.types';
+import { IPlace } from "../place/models/IPlace";
 import {
   deserializeDailyForecast,
   serializeDailyForecast,

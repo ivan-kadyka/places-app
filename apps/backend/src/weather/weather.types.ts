@@ -43,21 +43,6 @@ export interface OpenMeteoForecastResponse {
   daily: OpenMeteoDailyForecast;
 }
 
-type PlaceId = string;
-export interface IPlace {
-  id: PlaceId;
-  name: string;
-  coordinate: ICoordinates;
-  timezone: string;
-  countryCode: string;
-  elevation?: number;
-  openMeteoId?: string;
-}
-
-export interface ICoordinates {
-  latitude: number;
-  longitude: number;
-}
 export interface GeocodingResult {
   id: number;
   name: string;

@@ -1,4 +1,4 @@
-import { IPlace } from '../../weather/weather.types';
+import { IPlace } from "src/place/models/IPlace";
 
 export interface ISearchPlacesQueryParams {
   query: string;

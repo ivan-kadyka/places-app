@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { ActivityScore } from './activity-score.model';
+import { ActivityScore } from './activity-score.dto';
 
 @ObjectType()
 export class Activity {

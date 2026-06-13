@@ -1,6 +1,6 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { DateRange } from './date-range.model';
-import { Activity } from './activity.model';
+import { DateRange } from './date-range.dto';
+import { Activity } from './activity.dto';
 
 @ObjectType()
 export class PlaceDetailsResult {

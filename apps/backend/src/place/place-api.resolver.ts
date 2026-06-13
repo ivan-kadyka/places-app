@@ -1,8 +1,8 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { IPlaceService } from '../place-activities/activities-ranking.service.interface';
 import { IPlaceSearchService } from './search/place-search.service.interface';
-import { Place } from './models/place.model';
-import { PlaceDetailsResult } from './models/place-details-result.model';
+import { Place } from './dto/place.dto';
+import { PlaceDetailsResult } from './dto/place-details-result.dto';
 import { Int } from '@nestjs/graphql';
 
 @Resolver()

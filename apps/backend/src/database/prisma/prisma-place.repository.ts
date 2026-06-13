@@ -1,25 +1,25 @@
 import { IPlaceRepository, ISearchRepositoryParams } from '../repositories/place.repository.interface';
-import { PlaceEntity } from '../entities/place.entity';
 import { PrismaClient } from 'prisma/generated/client';
-import { IPlace } from 'src/weather/weather.types';
+import { IPlace } from "src/place/models/IPlace";
+import { placeEntityToIPlace } from 'src/place/models/utils/placeEntityToIPlace';
 
 export class PrismaPlaceRepository implements IPlaceRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async findById(id: string): Promise<PlaceEntity | null> {
-    return this.prisma.place.findUnique({
+  async findById(id: string): Promise<IPlace | null> {
+    const dbPlace = await this.prisma.place.findUnique({
       where: { id },
     });
+
+    if (!dbPlace) {
+      return null;
+    }
+
+    return placeEntityToIPlace(dbPlace);
   }
 
-  async findByOpenMeteoId(openMeteoId: string): Promise<PlaceEntity | null> {
-    return this.prisma.place.findFirst({
-      where: { openMeteoId : openMeteoId },
-    });
-  }
-
-  async search({name}: ISearchRepositoryParams): Promise<PlaceEntity[]> {
-    return this.prisma.place.findMany({
+  async search({name}: ISearchRepositoryParams): Promise<IPlace[]> {
+    const dbPlaces = await this.prisma.place.findMany({
       where: {
         name: {
           contains: name,
@@ -27,11 +27,14 @@ export class PrismaPlaceRepository implements IPlaceRepository {
         },
       },
     });
+
+   return dbPlaces.map(placeEntityToIPlace);
+
   }
 
-    async saveMany(places: IPlace[]): Promise<PlaceEntity[]> {
+    async save(places: IPlace[]): Promise<IPlace[]> {
 
-    const createdPlaces : PlaceEntity[] = []  
+    const createdPlaces : IPlace[] = []  
     for (const place of places) {
       const result = await this.prisma.place.create({data: {
         name: place.name,
@@ -43,7 +46,7 @@ export class PrismaPlaceRepository implements IPlaceRepository {
         openMeteoId: place.openMeteoId ?? undefined,
       }});
       
-      createdPlaces.push(result);
+      createdPlaces.push(placeEntityToIPlace(result));
     }
     return createdPlaces;
     }

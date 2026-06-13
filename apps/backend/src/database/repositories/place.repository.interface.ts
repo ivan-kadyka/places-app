@@ -1,10 +1,8 @@
-import { IPlace } from 'src/weather/weather.types';
-import { PlaceEntity } from '../entities/place.entity';
+import { IPlace } from "src/place/models/IPlace";
 export abstract class IPlaceRepository {
-  abstract findById(id: string): Promise<PlaceEntity | null>;
-  abstract findByOpenMeteoId(openMeteoId: string): Promise<PlaceEntity | null>;
-  abstract search(params: ISearchRepositoryParams): Promise<PlaceEntity[]>;
-  abstract saveMany(places: IPlace[]): Promise<PlaceEntity[]>;
+  abstract findById(id: string): Promise<IPlace | null>;
+  abstract search(params: ISearchRepositoryParams): Promise<IPlace[]>;
+  abstract save(places: IPlace[]): Promise<IPlace[]>;
 }
 
 export interface ISearchRepositoryParams {

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { IWeatherService, WeatherForecastResponse } from './weather.service.interface';
 import { WeatherCacheService } from './weather-cache.service';
-import { IPlace } from 'src/weather/weather.types';
+import { IPlace } from "../place/models/IPlace";
 
 @Injectable()
 export class WeatherService implements IWeatherService {

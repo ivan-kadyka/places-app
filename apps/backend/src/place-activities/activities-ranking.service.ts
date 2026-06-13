@@ -12,7 +12,6 @@ import {
   RankingsResponse,
 } from '../weather/weather.types';
 import { IDBContext } from 'src/database/db-context.interface';
-import { placeEntityToIPlace } from 'src/place/models/utils/placeEntityToIPlace';
 
 @Injectable()
 export class ActivitiesRankingService implements IActivitiesRankingService {
@@ -26,13 +25,11 @@ export class ActivitiesRankingService implements IActivitiesRankingService {
     placeId: string,
   ): Promise<RankingsResponse> {
 
-    const placeEntity = await this.dbContext.places.findById(placeId);
+    const place = await this.dbContext.places.findById(placeId);
 
-    if (!placeEntity) {
+    if (!place) {
       throw new NotFoundException('Place not found');
     }
-
-    const place = placeEntityToIPlace(placeEntity);
 
     const weatherForecast = await this.weatherService.getWeatherByPlace(place);
     const { location, daily, fetchedAt, expiresAt, cacheHit } = weatherForecast;

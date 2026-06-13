@@ -1,4 +1,5 @@
-import { DailyWeatherPoint, IPlace } from './weather.types';
+import { DailyWeatherPoint } from './weather.types';
+import { IPlace } from "../place/models/IPlace";
 
 export interface WeatherForecastResponse {
   location: {

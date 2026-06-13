@@ -3,7 +3,7 @@ import { GetPlaceActivitiesQueryDto } from '../place-activities/dto/get-place-ac
 import { IPlaceService } from '../place-activities/activities-ranking.service.interface';
 import { IPlaceSearchService } from './search/place-search.service.interface';
 import { SearchPlacesQueryDto } from './dto/search-places-query.dto';
-import { IPlace } from '../weather/weather.types';
+import { IPlace } from "src/place/models/IPlace";
 
 @Controller('place')
 export class PlaceApiController {

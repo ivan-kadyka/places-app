@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { IPlaceSearchService, ISearchPlacesQueryParams } from './place-search.service.interface';
-import { IPlace } from '../../weather/weather.types';
+import { IPlace } from "src/place/models/IPlace";
 import { IDBContext } from '../../database/db-context.interface';
 import { OpenMeteoPlaceSearchService } from './open-meteo-place-search.service';
-import { placeEntityToIPlace } from 'src/place/models/utils/placeEntityToIPlace';
 
 @Injectable()
 export class PlaceSearchService implements IPlaceSearchService {
@@ -17,9 +16,10 @@ export class PlaceSearchService implements IPlaceSearchService {
 
     const {query, count} = params;
     // 1. Try database first
-    const dbResults = await this.dbContext.places.search({ name: query, count });
-    if (dbResults.length > 0) {
-      return dbResults.map(placeEntityToIPlace);
+    const places = await this.dbContext.places.search({ name: query, count });
+
+    if (places.length > 0) {
+      return places;
     }
 
     // 2. If no results, use OpenMeteo
@@ -29,8 +29,8 @@ export class PlaceSearchService implements IPlaceSearchService {
     }
 
       // 3. Save to database using saveMany
-    const savedPlaces = await this.dbContext.places.saveMany(openMeteoResults);
+    const savedPlaces = await this.dbContext.places.save(openMeteoResults);
 
-    return savedPlaces.map(placeEntityToIPlace);
+    return savedPlaces;
   }
 }
