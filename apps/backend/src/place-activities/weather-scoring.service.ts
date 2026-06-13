@@ -9,14 +9,14 @@ export class WeatherScoringService implements IActivityScoreService {
     location: { latitude: number; longitude: number; timezone: string },
     weather: DailyWeatherPoint,
   ): IActivityScore[] {
-    return ACTIVITIES.map((activity) => {
+    return ACTIVITIES.map((activity): IActivityScore => {
       const scorer = activityScorers[activity];
       const rawScore = scorer(weather);
       
       const level = this.getRecommendationLevel(rawScore);
       
       return {
-        name: activity,
+        type: activity,
         score: {
           type: level,
           percentage: Math.round(rawScore * 10) / 10,

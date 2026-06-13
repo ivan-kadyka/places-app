@@ -54,7 +54,7 @@ export class ActivitiesRankingService implements IActivitiesRankingService {
   ): ActivityRanking {
     const scoredDays = days.map((day) => {
       const scores = this.scoringService.scoreActivities(location, day);
-      const activityScore = scores.find((s) => s.name === activity);
+      const activityScore = scores.find((s) => s.type === activity);
 
       return {
         date: day.date,

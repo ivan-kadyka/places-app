@@ -3,7 +3,10 @@ import { RankingsController } from './rankings.controller';
 import { PlaceInfoController } from './place-info.controller';
 import { IActivityScoreService } from './weather-scoring.service.interface';
 import { WeatherScoringService } from './weather-scoring.service';
-import { IActivitiesRankingService, IPlaceService } from './activities-ranking.service.interface';
+import {
+  IActivitiesRankingService,
+  IPlaceService,
+} from './activities-ranking.service.interface';
 import { ActivitiesRankingService } from './activities-ranking.service';
 import { PlaceService } from './place.service';
 import { WeatherModule } from '../weather/weather.module';
