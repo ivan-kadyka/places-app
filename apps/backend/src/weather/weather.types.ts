@@ -59,10 +59,19 @@ export interface GeocodingResponse {
   results?: GeocodingResult[];
 }
 
+export enum RecommendationLevel {
+  Unsuitable = 1,
+  Poor = 2,
+  Average = 3,
+  Good = 4,
+  Ideal = 5,
+}
+
 export interface ActivityDayRanking {
   date: string;
   rank: number;
   score: number;
+  recommendationLevel: RecommendationLevel;
   weatherCode: number;
   temperatureMax: number;
   temperatureMin: number;

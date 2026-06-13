@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { IDBContext } from './db-context.interface';
-import { PrismaDBContext } from './prisma/prisma-db-context.js';
+import { PrismaDBContext } from './prisma/prisma-db-context';
 
 @Global()
 @Module({

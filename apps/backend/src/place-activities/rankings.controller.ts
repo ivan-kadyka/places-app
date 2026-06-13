@@ -1,10 +1,10 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { GetRankingsQueryDto } from './dto/get-rankings-query.dto';
-import { RankingsService } from './rankings.service';
+import { IActivitiesRankingService } from './activities-ranking.service.interface';
 
 @Controller('rankings')
 export class RankingsController {
-  constructor(private readonly rankingsService: RankingsService) {}
+  constructor(private readonly rankingsService: IActivitiesRankingService) {}
 
   @Get()
   getRankings(@Query() query: GetRankingsQueryDto) {
