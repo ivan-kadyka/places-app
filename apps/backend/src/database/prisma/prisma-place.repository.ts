@@ -1,4 +1,4 @@
-import { IPlaceRepository } from '../repositories/place.repository.interface';
+import { IPlaceRepository, ISearchRepositoryParams } from '../repositories/place.repository.interface';
 import { PlaceEntity } from '../entities/place.entity';
 import { WeatherSnapshotEntity } from '../entities/weather-snapshot.entity';
 import { PrismaClient } from 'prisma/generated/client';
@@ -15,6 +15,17 @@ export class PrismaLocationRepository implements IPlaceRepository {
   async findByOpenMeteoId(openMeteoId: number): Promise<PlaceEntity | null> {
     return this.prisma.place.findFirst({
       where: { openMeteoId : openMeteoId },
+    });
+  }
+
+  async search({name}: ISearchRepositoryParams): Promise<PlaceEntity[]> {
+    return this.prisma.place.findMany({
+      where: {
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
     });
   }
 

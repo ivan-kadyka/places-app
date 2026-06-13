@@ -40,7 +40,7 @@ export class WeatherCacheService {
   async resolveLocation(
     geocoding: GeocodingResult,
   ): Promise<{ id: string; timezone: string }> {
-    const location = await this.dbContext.locations.upsert(
+    const location = await this.dbContext.places.upsert(
       geocoding.id,
       {
         name: geocoding.name,
@@ -134,7 +134,7 @@ export class WeatherCacheService {
   @Cron(CronExpression.EVERY_6_HOURS)
   async refreshExpiredSnapshots(): Promise<void> {
     const now = new Date();
-    const staleLocations = await this.dbContext.locations.findStaleLocations(now);
+    const staleLocations = await this.dbContext.places.findStaleLocations(now);
 
     if (!staleLocations.length) {
       return;

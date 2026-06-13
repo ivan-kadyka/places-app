@@ -43,15 +43,15 @@ export interface OpenMeteoForecastResponse {
   daily: OpenMeteoDailyForecast;
 }
 
+type PlaceId = string;
 export interface IPlace {
-  id: number;
+  id: PlaceId;
   name: string;
   coordinate: ICoordinates;
   elevation: number;
   timezone: string;
   countryCode: string;
   country: string;
-  admin1?: string;
 }
 
 export interface ICoordinates {

@@ -43,7 +43,7 @@ export class OpenMeteoPlaceSearchService implements IPlaceSearchService {
     }
 
     return data.results.map((result) => ({
-      id: result.id,
+      id: result.id.toString(),
       name: result.name,
       coordinate: {
         latitude: result.latitude,

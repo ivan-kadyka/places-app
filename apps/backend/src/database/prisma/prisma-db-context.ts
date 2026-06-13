@@ -13,7 +13,7 @@ export class PrismaDBContext extends IDBContext implements OnModuleInit, OnModul
   private readonly prisma: PrismaClient;
   private readonly pool: Pool;
 
-  readonly locations: IPlaceRepository;
+  readonly places: IPlaceRepository;
   readonly weatherSnapshots: IWeatherSnapshotRepository;
 
   constructor() {
@@ -21,7 +21,7 @@ export class PrismaDBContext extends IDBContext implements OnModuleInit, OnModul
     this.pool = new Pool({ connectionString: process.env.DATABASE_URL });
     const adapter = new PrismaPg(this.pool);
     this.prisma = new PrismaClient({ adapter });
-    this.locations = new PrismaLocationRepository(this.prisma);
+    this.places = new PrismaLocationRepository(this.prisma);
     this.weatherSnapshots = new PrismaWeatherSnapshotRepository(this.prisma);
   }
 
@@ -43,12 +43,12 @@ export class PrismaDBContext extends IDBContext implements OnModuleInit, OnModul
 }
 
 class PrismaTransactionDBContext extends IDBContext {
-  readonly locations: IPlaceRepository;
+  readonly places: IPlaceRepository;
   readonly weatherSnapshots: IWeatherSnapshotRepository;
 
   constructor(prisma: PrismaClient) {
     super();
-    this.locations = new PrismaLocationRepository(prisma);
+    this.places = new PrismaLocationRepository(prisma);
     this.weatherSnapshots = new PrismaWeatherSnapshotRepository(prisma);
   }
 

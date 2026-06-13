@@ -24,7 +24,7 @@ export class WeatherService implements IWeatherService {
     const { id: locationId, timezone } =
       await this.weatherCache.resolveLocation(geocoding);
 
-    const location = await this.dbContext.locations.findById(locationId);
+    const location = await this.dbContext.places.findById(locationId);
     if (!location) {
       throw new NotFoundException(`Location with ID "${locationId}" not found`);
     }
