@@ -4,8 +4,6 @@ import { WeatherCacheService } from './weather-cache.service';
 import { IWeatherService } from './weather.service.interface';
 import { WeatherService } from './weather.service';
 import { OpenMeteoPlaceSearchService } from '../place/search/open-meteo-place-search.service';
-import { IPlaceSearchService } from '../place/search/place-search.service.interface';
-import { PlaceSearchService } from '../place/search/place-search.service';
 
 @Module({
   providers: [
@@ -16,17 +14,11 @@ import { PlaceSearchService } from '../place/search/place-search.service';
       useClass: WeatherService,
     },
     OpenMeteoPlaceSearchService,
-    PlaceSearchService,
-    {
-      provide: IPlaceSearchService,
-      useClass: PlaceSearchService,
-    },
   ],
   exports: [
     OpenMeteoService,
     WeatherCacheService,
-    IWeatherService,
-    IPlaceSearchService,
+    IWeatherService
   ],
 })
 export class WeatherModule {}

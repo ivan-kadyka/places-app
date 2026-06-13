@@ -1,31 +1,54 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  IPlaceService,
-  IPlaceDetailsParams,
-  IPlaceDetailsResult,
-  IActivity,
-} from '../place-activities/activities-ranking.service.interface';
+import { IActivity } from 'src/place/models/IActivity';
+import { IPlaceDetails } from 'src/place/models/IPlaceDetails';
 import { IWeatherService } from '../weather/weather.service.interface';
 import { IActivityScoreService } from '../place-activities/weather-scoring.service.interface';
 import { RecommendationLevel } from '../weather/weather.types';
-import { IPlaceSearchService } from 'src/place/search/place-search.service.interface';
 import { ACTIVITIES } from 'src/place/models/ActivityType';
+import { IPlaceDetailsParams, IPlaceService, ISearchPlacesParams } from 'src/place/place.service.interface';
+import { IPlace } from 'src/place/models/IPlace';
+import { IDBContext } from 'src/database/db-context.interface';
+import { OpenMeteoPlaceSearchService } from 'src/place/search/open-meteo-place-search.service';
 
 @Injectable()
 export class PlaceService implements IPlaceService {
   constructor(
     private readonly weatherService: IWeatherService,
     private readonly scoringService: IActivityScoreService,
-    private readonly searchService: IPlaceSearchService,
+    private readonly dbContext: IDBContext,
+    private readonly openMeteoSearchService: OpenMeteoPlaceSearchService,
   ) {}
+
+  
+  async search(params : ISearchPlacesParams): Promise<IPlace[]> {
+  
+      const {name: query, count} = params;
+      // 1. Try database first
+      const places = await this.dbContext.places.search({ name: query, count });
+  
+      if (places.length > 0) {
+        return places;
+      }
+  
+      // 2. If no results, use OpenMeteo
+      const openMeteoResults = await this.openMeteoSearchService.search(params);
+      if (openMeteoResults.length === 0) {
+        return [];
+      }
+  
+      // 3. Save to database
+      const savedPlaces = await this.dbContext.places.save(openMeteoResults);
+  
+      return savedPlaces;
+    }
 
   async getDetails(
     params: IPlaceDetailsParams,
-  ): Promise<IPlaceDetailsResult> {
+  ): Promise<IPlaceDetails> {
 
     const placeName = params.name
 
-    const searchResult = await this.searchService.search({ name: placeName, count: 1 });
+    const searchResult = await this.search({ name: placeName, count: 1 });
 
     const place = searchResult[0]
     

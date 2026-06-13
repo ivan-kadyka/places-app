@@ -1,15 +1,13 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { GetPlaceActivitiesQueryDto } from '../place-activities/dto/get-place-activities-query.dto';
-import { IPlaceService } from '../place-activities/activities-ranking.service.interface';
-import { IPlaceSearchService } from './search/place-search.service.interface';
 import { SearchPlacesQueryDto } from './dto/search-places-query.dto';
 import { IPlace } from "src/place/models/IPlace";
+import { IPlaceService } from 'src/place/place.service.interface';
 
 @Controller('place')
 export class PlaceApiController {
   constructor(
     private readonly placeService: IPlaceService,
-    private readonly placeSearchService: IPlaceSearchService,
   ) {}
 
   @Get('details')
@@ -19,7 +17,7 @@ export class PlaceApiController {
 
   @Get('search')
   async searchPlaces(@Query() query: SearchPlacesQueryDto): Promise<IPlace[]> {
-    return this.placeSearchService.search(query);
+    return this.placeService.search(query);
   }
 }
 
