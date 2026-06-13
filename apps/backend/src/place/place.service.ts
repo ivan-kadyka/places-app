@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   IPlaceService,
   IPlaceActivitiesParams,
@@ -8,19 +8,32 @@ import {
 import { IWeatherService } from '../weather/weather.service.interface';
 import { IActivityScoreService } from '../place-activities/weather-scoring.service.interface';
 import { ACTIVITIES, RecommendationLevel } from '../weather/weather.types';
+import { IPlaceSearchService } from 'src/place/search/place-search.service.interface';
 
 @Injectable()
 export class PlaceService implements IPlaceService {
   constructor(
     private readonly weatherService: IWeatherService,
     private readonly scoringService: IActivityScoreService,
+    private readonly searchService: IPlaceSearchService,
   ) {}
 
   async getActivities(
     params: IPlaceActivitiesParams,
   ): Promise<IPlaceActivitiesResult> {
+
+    const placeName = params.place
+
+    const searchResult = await this.searchService.search(placeName, 1);
+
+    const place = searchResult[0]
+    
+    if (!place) {
+      throw new NotFoundException(`Place ${placeName} not found`);
+    }
+
     const weatherForecast = await this.weatherService.getWeatherByPlace(
-      params.place,
+      place
     );
 
     const activities: IActivity[] = ACTIVITIES.map((activityType) => {

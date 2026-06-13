@@ -10,7 +10,7 @@ datasource db {
 
 model Place {
   id           String          @id @default(cuid())
-  openMeteoId  Int?            
+  openMeteoId  String?            
   name         String
   countryCode  String
   latitude     Float

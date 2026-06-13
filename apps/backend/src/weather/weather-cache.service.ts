@@ -1,11 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { IDBContext } from '../database/db-context.interface';
 import { OpenMeteoService } from './open-meteo.service';
 import {
   DailyWeatherPoint,
-  GeocodingResult,
   OpenMeteoDailyForecast,
 } from './weather.types';
 import {
@@ -37,35 +35,7 @@ export class WeatherCacheService {
     this.cacheTtlMs = ttlHours * 60 * 60 * 1000;
   }
 
-  async resolveLocation(
-    geocoding: GeocodingResult,
-  ): Promise<{ id: string; timezone: string }> {
-    const location = await this.dbContext.places.upsert(
-      geocoding.id,
-      {
-        name: geocoding.name,
-        country: geocoding.country,
-        countryCode: geocoding.country_code,
-        admin1: geocoding.admin1 ?? null,
-        latitude: geocoding.latitude,
-        longitude: geocoding.longitude,
-        elevation: geocoding.elevation,
-        timezone: geocoding.timezone,
-      },
-      {
-        name: geocoding.name,
-        country: geocoding.country,
-        countryCode: geocoding.country_code,
-        admin1: geocoding.admin1 ?? null,
-        latitude: geocoding.latitude,
-        longitude: geocoding.longitude,
-        elevation: geocoding.elevation,
-        timezone: geocoding.timezone,
-      },
-    );
 
-    return { id: location.id, timezone: location.timezone };
-  }
 
   async getWeatherForLocation(
     locationId: string,
@@ -129,34 +99,5 @@ export class WeatherCacheService {
       daily,
       cacheHit: false,
     };
-  }
-
-  @Cron(CronExpression.EVERY_6_HOURS)
-  async refreshExpiredSnapshots(): Promise<void> {
-    const now = new Date();
-    const staleLocations = await this.dbContext.places.findStaleLocations(now);
-
-    if (!staleLocations.length) {
-      return;
-    }
-
-    this.logger.log(
-      `Refreshing ${staleLocations.length} location(s) with stale weather data`,
-    );
-
-    for (const location of staleLocations) {
-      try {
-        await this.refreshWeather(
-          location.id,
-          location.latitude,
-          location.longitude,
-          location.timezone,
-        );
-      } catch (error) {
-        this.logger.error(
-          `Failed to refresh weather for ${location.name}: ${String(error)}`,
-        );
-      }
-    }
   }
 }

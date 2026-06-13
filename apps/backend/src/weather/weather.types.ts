@@ -48,10 +48,10 @@ export interface IPlace {
   id: PlaceId;
   name: string;
   coordinate: ICoordinates;
-  elevation: number;
   timezone: string;
   countryCode: string;
-  country: string;
+  elevation?: number;
+  openMeteoId?: string;
 }
 
 export interface ICoordinates {
@@ -101,9 +101,7 @@ export interface ActivityRanking {
 export interface RankingsResponse {
   location: {
     name: string;
-    country: string;
     countryCode: string;
-    admin1: string | null;
     latitude: number;
     longitude: number;
     timezone: string;

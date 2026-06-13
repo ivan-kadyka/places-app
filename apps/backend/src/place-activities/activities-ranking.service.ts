@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { IActivitiesRankingService } from './activities-ranking.service.interface';
 import { IWeatherService } from '../weather/weather.service.interface';
 import { IActivityScoreService } from './weather-scoring.service.interface';
@@ -11,19 +11,30 @@ import {
   RecommendationLevel,
   RankingsResponse,
 } from '../weather/weather.types';
+import { IDBContext } from 'src/database/db-context.interface';
+import { placeEntityToIPlace } from 'src/place/models/utils/placeEntityToIPlace';
 
 @Injectable()
 export class ActivitiesRankingService implements IActivitiesRankingService {
   constructor(
+     private readonly dbContext: IDBContext,
     private readonly weatherService: IWeatherService,
     private readonly scoringService: IActivityScoreService,
   ) {}
 
-  async getRankingsForCity(
-    city: string,
-    countryCode?: string,
+  async getPlaceDetails(
+    placeId: string,
   ): Promise<RankingsResponse> {
-    const weatherForecast = await this.weatherService.getWeatherByPlace(city, countryCode);
+
+    const placeEntity = await this.dbContext.places.findById(placeId);
+
+    if (!placeEntity) {
+      throw new NotFoundException('Place not found');
+    }
+
+    const place = placeEntityToIPlace(placeEntity);
+
+    const weatherForecast = await this.weatherService.getWeatherByPlace(place);
     const { location, daily, fetchedAt, expiresAt, cacheHit } = weatherForecast;
 
     const rankings = ACTIVITIES.map((activity) =>
@@ -33,9 +44,7 @@ export class ActivitiesRankingService implements IActivitiesRankingService {
     return {
       location: {
         name: location.name,
-        country: location.country,
         countryCode: location.countryCode,
-        admin1: location.admin1,
         latitude: location.latitude,
         longitude: location.longitude,
         timezone: location.timezone,

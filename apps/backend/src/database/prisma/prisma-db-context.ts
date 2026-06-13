@@ -2,7 +2,7 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { IDBContext } from '../db-context.interface';
 import { IPlaceRepository } from '../repositories/place.repository.interface';
 import { IWeatherSnapshotRepository } from '../repositories/weather-snapshot.repository.interface';
-import { PrismaLocationRepository } from './prisma-place.repository';
+import { PrismaPlaceRepository } from './prisma-place.repository';
 import { PrismaWeatherSnapshotRepository } from './prisma-weather-snapshot.repository';
 import { PrismaClient } from 'prisma/generated/client';
 import { PrismaPg } from '@prisma/adapter-pg';
@@ -21,7 +21,7 @@ export class PrismaDBContext extends IDBContext implements OnModuleInit, OnModul
     this.pool = new Pool({ connectionString: process.env.DATABASE_URL });
     const adapter = new PrismaPg(this.pool);
     this.prisma = new PrismaClient({ adapter });
-    this.places = new PrismaLocationRepository(this.prisma);
+    this.places = new PrismaPlaceRepository(this.prisma);
     this.weatherSnapshots = new PrismaWeatherSnapshotRepository(this.prisma);
   }
 
@@ -48,7 +48,7 @@ class PrismaTransactionDBContext extends IDBContext {
 
   constructor(prisma: PrismaClient) {
     super();
-    this.places = new PrismaLocationRepository(prisma);
+    this.places = new PrismaPlaceRepository(prisma);
     this.weatherSnapshots = new PrismaWeatherSnapshotRepository(prisma);
   }
 

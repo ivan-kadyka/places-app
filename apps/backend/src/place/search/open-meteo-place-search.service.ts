@@ -1,23 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { IPlaceSearchService } from './place-search.service.interface';
-import { IPlace } from '../../weather/weather.types';
+import { IPlace, GeocodingResponse } from '../../weather/weather.types';
 
 const GEOCODING_BASE = 'https://geocoding-api.open-meteo.com/v1/search';
-
-interface GeocodingResult {
-  id: number;
-  name: string;
-  latitude: number;
-  longitude: number;
-  elevation: number;
-  timezone: string;
-  country_code: string;
-  country: string;
-}
-
-interface GeocodingResponse {
-  results?: GeocodingResult[];
-}
 
 @Injectable()
 export class OpenMeteoPlaceSearchService implements IPlaceSearchService {
@@ -52,7 +37,7 @@ export class OpenMeteoPlaceSearchService implements IPlaceSearchService {
       elevation: result.elevation,
       timezone: result.timezone,
       countryCode: result.country_code,
-      country: result.country
+      openMeteoId: result.id.toString(),
     }));
   }
 }

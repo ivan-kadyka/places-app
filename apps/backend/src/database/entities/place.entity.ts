@@ -1,6 +1,6 @@
 export interface PlaceEntity {
   id: string;
-  openMeteoId: number | null;
+  openMeteoId: string | null;
   name: string;
   countryCode: string;
   latitude: number;
