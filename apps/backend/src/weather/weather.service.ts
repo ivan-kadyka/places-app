@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { IWeatherService, WeatherForecastResponse } from './weather.service.interface';
+import { IWeatherService, PlaceWeatherForecast } from './weather.service.interface';
 import { WeatherCacheService } from './weather-cache.service';
 import { IPlace } from "../place/models/IPlace";
 
@@ -11,27 +11,18 @@ export class WeatherService implements IWeatherService {
 
   async getWeatherByPlace(
     place: IPlace,
-  ): Promise<WeatherForecastResponse> {
+  ): Promise<PlaceWeatherForecast> {
     
+    const {  openMeteoId} = place
 
-    const {  openMeteoId: locationId, name, countryCode, coordinate, timezone } = place
-    const {latitude, longitude} = coordinate
-
-    if (!locationId) {
+    if (!openMeteoId) {
       throw new NotFoundException('Place entity has no openMeteoId');
     }
 
     const weather = await this.weatherCache.getWeatherForPlace(place);
 
     return {
-      location: {
-        id: locationId,
-        name: name,
-        countryCode: countryCode,
-        latitude: latitude,
-        longitude:longitude,
-        timezone: timezone,
-      },
+      place,
       fetchedAt: weather.fetchedAt,
       expiresAt: weather.expiresAt,
       cacheHit: weather.cacheHit,

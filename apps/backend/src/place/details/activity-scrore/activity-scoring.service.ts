@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { IActivityScoreService, IActivityScore } from './weather-scoring.service.interface';
-import { DailyWeatherPoint, RecommendationLevel } from '../weather/weather.types';
+import { IActivityScoreService, IActivityScore } from './activity-scoring.service.interface';
+import { DailyWeatherPoint, RecommendationLevel } from '../../../weather/weather.types';
 import { activityScorers } from './activity-scoring';
 import { ACTIVITIES } from 'src/place/models/ActivityType';
+import { IPlace } from 'src/place/models/IPlace';
 
 @Injectable()
-export class WeatherScoringService implements IActivityScoreService {
+export class ActivityScoringService implements IActivityScoreService {
   scoreActivities(
-    location: { latitude: number; longitude: number; timezone: string },
+    place: IPlace,
     weather: DailyWeatherPoint,
   ): IActivityScore[] {
     return ACTIVITIES.map((activity): IActivityScore => {

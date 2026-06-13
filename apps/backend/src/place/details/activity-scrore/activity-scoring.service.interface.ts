@@ -1,7 +1,8 @@
+import { IPlace } from 'src/place/models/IPlace';
 import {
   DailyWeatherPoint,
   RecommendationLevel,
-} from '../weather/weather.types';
+} from '../../../weather/weather.types';
 import { ActivityType } from "src/place/models/ActivityType";
 
 export interface IActivityScore {
@@ -14,7 +15,7 @@ export interface IActivityScore {
 
 export abstract class IActivityScoreService {
   abstract scoreActivities(
-    location: { latitude: number; longitude: number; timezone: string },
+    place: IPlace,
     weather: DailyWeatherPoint,
   ): IActivityScore[];
 }

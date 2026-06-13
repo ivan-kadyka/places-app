@@ -4,7 +4,7 @@ import {
   scoreSkiing,
   scoreSurfing,
 } from './activity-scoring';
-import { DailyWeatherPoint } from '../weather/weather.types';
+import { DailyWeatherPoint } from '../../../weather/weather.types';
 
 function makeDay(overrides: Partial<DailyWeatherPoint> = {}): DailyWeatherPoint {
   return {

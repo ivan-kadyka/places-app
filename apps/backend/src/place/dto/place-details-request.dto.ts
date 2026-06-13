@@ -1,12 +1,12 @@
 import { IsOptional, IsString, MinLength } from 'class-validator';
 
-export class GetRankingsQueryDto {
+export class PlaceDetailsRequestDto {
   @IsString()
   @MinLength(2)
-  city!: string;
+  place!: string;
 
   @IsOptional()
   @IsString()
   @MinLength(2)
-  country?: string;
+  country_code?: string;
 }

@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { GetPlaceActivitiesQueryDto } from '../place-activities/dto/get-place-activities-query.dto';
+import { PlaceDetailsRequestDto } from './dto/place-details-request.dto';
 import { SearchPlacesQueryDto } from './dto/search-places-query.dto';
 import { IPlace } from "src/place/models/IPlace";
 import { IPlaceService } from 'src/place/place.service.interface';
@@ -11,7 +11,7 @@ export class PlaceApiController {
   ) {}
 
   @Get('details')
-  getPlaceActivities(@Query() query: GetPlaceActivitiesQueryDto) {
+  getPlaceActivities(@Query() query: PlaceDetailsRequestDto) {
     return this.placeService.getDetails({ name: query.place });
   }
 

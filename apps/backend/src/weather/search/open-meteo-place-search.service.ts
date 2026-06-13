@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GeocodingResponse } from '../../weather/weather.types';
+import { GeocodingResponse } from '../weather.types';
 import { IPlace } from "src/place/models/IPlace";
 import { ISearchPlacesParams } from 'src/place/place.service.interface';
 

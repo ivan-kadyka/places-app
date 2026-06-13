@@ -1,15 +1,8 @@
 import { DailyWeatherPoint } from './weather.types';
 import { IPlace } from "../place/models/IPlace";
 
-export interface WeatherForecastResponse {
-  location: {
-    id: string;
-    name: string;
-    countryCode: string;
-    latitude: number;
-    longitude: number;
-    timezone: string;
-  };
+export interface PlaceWeatherForecast {
+  place: IPlace;
   fetchedAt: Date;
   expiresAt: Date;
   cacheHit: boolean;
@@ -19,5 +12,5 @@ export interface WeatherForecastResponse {
 export abstract class IWeatherService {
   abstract getWeatherByPlace(
     place: IPlace
-  ): Promise<WeatherForecastResponse>;
+  ): Promise<PlaceWeatherForecast>;
 }

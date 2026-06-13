@@ -1,4 +1,4 @@
-import { DailyWeatherPoint } from '../weather/weather.types';
+import { DailyWeatherPoint } from '../../../weather/weather.types';
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));

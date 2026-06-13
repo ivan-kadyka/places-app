@@ -3,7 +3,7 @@ import { OpenMeteoService } from './open-meteo.service';
 import { WeatherCacheService } from './weather-cache.service';
 import { IWeatherService } from './weather.service.interface';
 import { WeatherService } from './weather.service';
-import { OpenMeteoPlaceSearchService } from '../place/search/open-meteo-place-search.service';
+import { OpenMeteoPlaceSearchService } from './search/open-meteo-place-search.service';
 
 @Module({
   providers: [
@@ -17,6 +17,7 @@ import { OpenMeteoPlaceSearchService } from '../place/search/open-meteo-place-se
   ],
   exports: [
     OpenMeteoService,
+    OpenMeteoPlaceSearchService,
     WeatherCacheService,
     IWeatherService
   ],

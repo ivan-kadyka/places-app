@@ -2,13 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { IActivity } from 'src/place/models/IActivity';
 import { IPlaceDetails } from 'src/place/models/IPlaceDetails';
 import { IWeatherService } from '../weather/weather.service.interface';
-import { IActivityScoreService } from '../place-activities/weather-scoring.service.interface';
+import { IActivityScoreService } from './details/activity-scrore/activity-scoring.service.interface';
 import { RecommendationLevel } from '../weather/weather.types';
 import { ACTIVITIES } from 'src/place/models/ActivityType';
 import { IPlaceDetailsParams, IPlaceService, ISearchPlacesParams } from 'src/place/place.service.interface';
 import { IPlace } from 'src/place/models/IPlace';
 import { IDBContext } from 'src/database/db-context.interface';
-import { OpenMeteoPlaceSearchService } from 'src/place/search/open-meteo-place-search.service';
+import { OpenMeteoPlaceSearchService } from 'src/weather/search/open-meteo-place-search.service';
 
 @Injectable()
 export class PlaceService implements IPlaceService {
@@ -62,7 +62,7 @@ export class PlaceService implements IPlaceService {
 
     const activities: IActivity[] = ACTIVITIES.map((activityType) => {
       const scoreResults = weatherForecast.daily.map((day) =>
-        this.scoringService.scoreActivities(weatherForecast.location, day),
+        this.scoringService.scoreActivities(weatherForecast.place, day),
       );
 
       const avgPercentage =
@@ -105,8 +105,8 @@ export class PlaceService implements IPlaceService {
      activities.sort((a, b) => b.score.percentage - a.score.percentage)
 
     return {
-      id: weatherForecast.location.id.toString(),
-      placeName: weatherForecast.location.name,
+      id: weatherForecast.place.id,
+      placeName: weatherForecast.place.name,
       dateRange: {
         from: fromDate,
         to: toDate,
