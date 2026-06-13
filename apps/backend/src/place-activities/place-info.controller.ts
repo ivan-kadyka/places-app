@@ -11,3 +11,5 @@ export class PlaceInfoController {
     return this.placeService.getActivities({ place: query.place });
   }
 }
+
+
