@@ -40,12 +40,10 @@ export function serializeDailyForecast(
     sunshine_duration: points.map((point) => point.sunshineDuration),
     precipitation_probability_max: points.map(
       (point) => point.precipitationProbabilityMax,
-    ),
+    )
   };
 }
 
-export function deserializeDailyForecast(
-  daily: OpenMeteoDailyForecast,
-): DailyWeatherPoint[] {
+export function deserializeDailyForecast(daily: OpenMeteoDailyForecast): DailyWeatherPoint[] {
   return parseDailyForecast({ daily } as OpenMeteoForecastResponse);
 }

@@ -10,7 +10,7 @@ export interface IPlaceDetailsParams {
 export interface ISearchPlacesParams {
   name: string;
   countryCode?: string;
-  count?: number;
+  limit?: number;
 }
 
 export abstract class IPlaceService {

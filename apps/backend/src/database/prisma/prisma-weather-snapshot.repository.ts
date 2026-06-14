@@ -1,6 +1,7 @@
 import { IWeatherSnapshotRepository } from '../repositories/weather-snapshot.repository.interface';
 import { WeatherSnapshotEntity } from '../entities/weather-snapshot.entity';
 import { PrismaClient, Prisma } from 'prisma/generated/client';
+import { IMetaData } from 'src/types/meta-data';
 
 export class PrismaWeatherSnapshotRepository implements IWeatherSnapshotRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -23,7 +24,7 @@ export class PrismaWeatherSnapshotRepository implements IWeatherSnapshotReposito
       placeId: result.placeId,
       fetchedAt: result.fetchedAt,
       expiresAt: result.expiresAt,
-      dailyData: result.dailyData,
+      dailyData: result.dailyData as IMetaData,
     };
   }
 
@@ -42,7 +43,7 @@ export class PrismaWeatherSnapshotRepository implements IWeatherSnapshotReposito
       placeId: result.placeId,
       fetchedAt: result.fetchedAt,
       expiresAt: result.expiresAt,
-      dailyData: result.dailyData,
+      dailyData: result.dailyData as IMetaData,
     };
   }
 }

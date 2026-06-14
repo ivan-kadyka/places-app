@@ -1,24 +1,22 @@
 import { Module } from '@nestjs/common';
 import { OpenMeteoService } from './open-meteo.service';
-import { WeatherCacheService } from './weather-cache.service';
+import { WeatherForecastService } from './weather-forecast.service';
 import { IWeatherForecastService } from './weather-forecast.service.interface';
-import { WeatherService } from './weather.service';
 import { OpenMeteoPlaceSearchService } from './search/open-meteo-place-search.service';
 
 @Module({
   providers: [
     OpenMeteoService,
-    WeatherCacheService,
+    WeatherForecastService,
     {
       provide: IWeatherForecastService,
-      useClass: WeatherService,
+      useClass: WeatherForecastService,
     },
     OpenMeteoPlaceSearchService,
   ],
   exports: [
     OpenMeteoService,
     OpenMeteoPlaceSearchService,
-    WeatherCacheService,
     IWeatherForecastService
   ],
 })

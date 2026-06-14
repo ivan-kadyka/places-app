@@ -8,11 +8,11 @@ const GEOCODING_BASE = 'https://geocoding-api.open-meteo.com/v1/search';
 @Injectable()
 export class OpenMeteoPlaceSearchService {
  
-  async search({name: query, count = 5, } : ISearchPlacesParams): Promise<IPlace[]> {
+  async search({name: query, limit = 5 } : ISearchPlacesParams): Promise<IPlace[]> {
 
     const params = new URLSearchParams({
       name: query.trim(),
-      count: String(count),
+      count: String(limit),
       language: 'en',
       format: 'json',
     });

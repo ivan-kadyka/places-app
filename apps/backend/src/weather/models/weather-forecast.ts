@@ -1,8 +1,9 @@
+import { PlaceId } from 'src/place/models/place';
 import { DailyWeatherPoint } from 'src/weather/weather.types';
 
 export interface IWeatherForecast {
-  fetchedAt: Date;
-  expiresAt: Date;
-  cacheHit: boolean;
-  daily: DailyWeatherPoint[];
+  placeId: PlaceId
+  fetchedAt: Date
+  expiresAt: Date
+  daily: DailyWeatherPoint[]
 }

@@ -20,9 +20,9 @@ export class PlaceService implements IPlaceService {
   
   async search(params : ISearchPlacesParams): Promise<IPlace[]> {
   
-      const {name: query, count} = params;
+      const {name: query, limit: count} = params;
       // 1. Try database first
-      const places = await this.dbContext.places.search({ name: query, count });
+      const places = await this.dbContext.places.search({ name: query, limit: count });
   
       if (places.length > 0) {
         return places;
@@ -44,7 +44,7 @@ export class PlaceService implements IPlaceService {
 
     const placeName = params.name
 
-    const places = await this.search({ name: placeName, count: 1 });
+    const places = await this.search({ name: placeName, limit: 1 });
     
     if (places.length === 0) {
       throw new NotFoundException(`Place ${placeName} not found`);
@@ -66,7 +66,7 @@ export class PlaceService implements IPlaceService {
     }
   }
 
-  getDateRangeOrNextWeek(dateRange?: IDateRange): IDateRange {
+  private getDateRangeOrNextWeek(dateRange?: IDateRange): IDateRange {
     if (dateRange) {
        return dateRange;
   }

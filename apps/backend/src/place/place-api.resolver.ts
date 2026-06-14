@@ -21,6 +21,6 @@ export class PlaceApiResolver {
     @Args('name') name: string,
     @Args('count', { type: () => Int, nullable: true }) count?: number,
   ): Promise<PlaceDto[]> {
-    return this.placeService.search({ name : name, count });
+    return this.placeService.search({ name : name, limit: count });
   }
 }
