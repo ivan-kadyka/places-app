@@ -1,13 +1,12 @@
 export type PlaceId = string;
 
 export interface IPlace {
-  id: PlaceId;
-  name: string;
-  coordinate: ICoordinates;
-  timezone: string;
-  countryCode: string;
-  elevation?: number;
-  openMeteoId?: string;
+  id: PlaceId
+  name: string
+  coordinate: ICoordinates
+  timezone: string
+  countryCode: string
+  elevation?: number
 }
 
 export interface ICoordinates {

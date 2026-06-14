@@ -4,7 +4,7 @@ import { IActivityScoreService } from 'src/domains/activity/activity-scoring.ser
 import { IPlaceDetailsParams, IPlaceService, ISearchPlacesParams } from 'src/domains/place/place.service.interface';
 import { IPlace } from 'src/domains/place/models/place';
 import { IDBContext } from 'src/database/db-context.interface';
-import { OpenMeteoPlaceSearchService } from 'src/domains/weather/search/open-meteo-place-search.service';
+import { OpenMeteoPlaceSearchService } from 'src/domains/weather/open-meteo/search/open-meteo-place-search.service';
 import { IWeatherForecastService } from 'src/domains/weather/weather-forecast.service.interface';
 import { getDateRangeOrNextWeek } from 'src/utils/date-utils';
 

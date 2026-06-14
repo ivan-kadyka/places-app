@@ -42,8 +42,7 @@ export class PrismaPlaceRepository implements IPlaceRepository {
          latitude: place.coordinate.latitude,
         longitude: place.coordinate.longitude,
         countryCode: place.countryCode.toUpperCase(),
-        elevation: place.elevation ?? undefined,
-        openMeteoId: place.openMeteoId ?? undefined,
+        elevation: place.elevation ?? undefined
       }});
       
       createdPlaces.push(placeEntityToIPlace(result));

@@ -1,16 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IDBContext } from '../../database/db-context.interface';
-import { OpenMeteoService } from './open-meteo.service';
+import { OpenMeteoService } from './open-meteo/open-meteo.service';
 import { IDayWeatherSnapshot, IWeatherSnapshot } from "./models/weather-snapshot";
 import { IPlace } from "../place/models/place";
-import { deserializeDailyForecast} from './forecast.utils';
+import { deserializeDailyForecast} from './open-meteo/utils/forecast.utils';
 import { IDateRange } from 'src/types/date-range';
 import { IWeatherForecastService } from 'src/domains/weather/weather-forecast.service.interface';
 import { IWeatherForecast } from 'src/domains/weather/models/weather-forecast';
 import { isSameDay } from 'date-fns';
 import { getDaysBetween, getDaysInRange } from 'src/utils/date-utils';
 import { CreateWeatherDaySnapshot } from 'src/database/repositories/weather-day-snapshot.repository.interface';
+import { WeatherDaySnapshotEntity } from 'src/database/entities/weather-day-snapshot.entity';
 
 @Injectable()
 export class WeatherForecastService implements IWeatherForecastService{
@@ -27,23 +28,13 @@ export class WeatherForecastService implements IWeatherForecastService{
   }
 
   async getWeatherByPlace(place: IPlace, dateRange: IDateRange): Promise<IWeatherForecast> {
-    const now = new Date()
-
+  
     const cachedSnapshots = await this.dbContext.weatherDaySnapshots.search(place.id, dateRange)
+    const daysInRange = getDaysInRange(dateRange)
 
-    const daysInRange = getDaysInRange(dateRange);
-    const allDaysCached = daysInRange.every(dayInRange => 
-      cachedSnapshots.some(cached => isSameDay(dayInRange, cached.date))
-    );
+    const validSnapshots = this.getValidSnapshots(cachedSnapshots, daysInRange);
 
-    if (allDaysCached && cachedSnapshots.length > 0) {
-      const nowMs = now.getTime();
-      const validSnapshots = cachedSnapshots.filter(s => {
-        const deltaAgeMs = nowMs - s.updatedAt.getTime()
-        return deltaAgeMs < this.cacheTtlMs
-      })
-
-      if (validSnapshots.length === cachedSnapshots.length) {
+      if (validSnapshots.length === daysInRange.length) {
         const daily: IDayWeatherSnapshot[] = validSnapshots.map(snapshot => {
           const data = snapshot.snapshot as IWeatherSnapshot;
           return {
@@ -58,10 +49,10 @@ export class WeatherForecastService implements IWeatherForecastService{
             sunshineDuration: data.sunshineDuration,
             weatherCode: data.weatherCode,
             precipitationProbabilityMax: data.precipitationProbabilityMax,
-          };
-        }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          }
+        }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
-        const oldestUpdatedAt = new Date(Math.min(...validSnapshots.map(s => s.updatedAt.getTime())));
+        const oldestUpdatedAt = new Date(Math.min(...validSnapshots.map(s => s.updatedAt.getTime())))
         const expiresAt = new Date(oldestUpdatedAt.getTime() + this.cacheTtlMs);
 
         return {
@@ -69,10 +60,9 @@ export class WeatherForecastService implements IWeatherForecastService{
           fetchedAt: oldestUpdatedAt,
           expiresAt,
           days: daily
-        };
+        }
       }
-    }
-
+  
     return this.refreshWeather(place, dateRange);
   }
 
@@ -101,9 +91,29 @@ export class WeatherForecastService implements IWeatherForecastService{
     };
   }
 
-  private convertToCreateWeatherDaySnapshot(place: IPlace, dayPoint: IDayWeatherSnapshot): CreateWeatherDaySnapshot {
+  private getValidSnapshots(cachedSnapshots: WeatherDaySnapshotEntity[], daysInRange: Date[]): WeatherDaySnapshotEntity[] {
+    const now = new Date()
+
+    const allDaysCached = daysInRange.every(dayInRange => 
+      cachedSnapshots.some(cached => isSameDay(dayInRange, cached.date))
+    )
+
+    if (allDaysCached && cachedSnapshots.length > 0) {
+      const nowMs = now.getTime();
+      const validSnapshots = cachedSnapshots.filter(s => {
+        const deltaAgeMs = nowMs - s.updatedAt.getTime()
+        return deltaAgeMs < this.cacheTtlMs
+      })
+
+      return validSnapshots
+   } 
+
+  return []
+ }
+
+  private convertToCreateWeatherDaySnapshot(place: IPlace, weatherSnapshot: IDayWeatherSnapshot): CreateWeatherDaySnapshot {
     
-    const {date, ...snapshot} = dayPoint;
+    const {date, ...snapshot} = weatherSnapshot;
 
     return {
       providerType: 'open-meteo',

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { OpenMeteoService } from './open-meteo.service';
+import { OpenMeteoService } from './open-meteo/open-meteo.service';
 import { WeatherForecastService } from './weather-forecast.service';
 import { IWeatherForecastService } from './weather-forecast.service.interface';
-import { OpenMeteoPlaceSearchService } from './search/open-meteo-place-search.service';
+import { OpenMeteoPlaceSearchService } from './open-meteo/search/open-meteo-place-search.service';
 
 @Module({
   providers: [

@@ -1,12 +1,8 @@
-import {
-  OpenMeteoDailyForecast,
-  OpenMeteoForecastResponse,
-} from './weather.types';
-import { IDayWeatherSnapshot } from "./models/weather-snapshot";
 
-export function parseDailyForecast(
-  response: OpenMeteoForecastResponse,
-): IDayWeatherSnapshot[] {
+import { OpenMeteoDailyForecast, OpenMeteoForecastResponse } from "../types/open-meteo-forecast-response";
+import { IDayWeatherSnapshot } from "../../models/weather-snapshot";
+
+export function parseDailyForecast(response: OpenMeteoForecastResponse): IDayWeatherSnapshot[] {
   const { daily } = response;
 
   return daily.time.map((date, index) => ({
@@ -24,9 +20,7 @@ export function parseDailyForecast(
   }));
 }
 
-export function serializeDailyForecast(
-  points: IDayWeatherSnapshot[],
-): OpenMeteoDailyForecast {
+export function serializeDailyForecast(points: IDayWeatherSnapshot[]): OpenMeteoDailyForecast {
   return {
     time: points.map((point) => point.date.toISOString().split('T')[0]),
     temperature_2m_max: points.map((point) => point.temperatureMax),

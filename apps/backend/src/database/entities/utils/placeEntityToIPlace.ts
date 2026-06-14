@@ -12,7 +12,6 @@ import { IPlace } from "src/domains/place/models/place";
       },
       elevation: entity.elevation ?? undefined,
       timezone: entity.timezone,
-      countryCode: entity.countryCode,
-      openMeteoId: entity.openMeteoId ?? undefined,
-    };
+      countryCode: entity.countryCode
+    }
   }

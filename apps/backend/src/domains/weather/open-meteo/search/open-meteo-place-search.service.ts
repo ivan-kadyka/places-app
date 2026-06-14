@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GeocodingResponse } from '../weather.types';
+import { GeocodingResponse } from '../types/open-meteo-geocoding-response';
 import { IPlace } from "src/domains/place/models/place";
 import { ISearchPlacesParams } from 'src/domains/place/place.service.interface';
 
@@ -8,10 +8,10 @@ const GEOCODING_BASE = 'https://geocoding-api.open-meteo.com/v1/search';
 @Injectable()
 export class OpenMeteoPlaceSearchService {
  
-  async search({name: query, limit = 5 } : ISearchPlacesParams): Promise<IPlace[]> {
+  async search({name, limit = 5 } : ISearchPlacesParams): Promise<IPlace[]> {
 
     const params = new URLSearchParams({
-      name: query.trim(),
+      name: name.trim(),
       count: String(limit),
       language: 'en',
       format: 'json',

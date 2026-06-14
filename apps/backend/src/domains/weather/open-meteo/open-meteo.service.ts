@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { OpenMeteoForecastResponse} from './weather.types';
+import { OpenMeteoForecastResponse } from "./types/open-meteo-forecast-response";
 
 const FORECAST_BASE = 'https://api.open-meteo.com/v1/forecast';
 
