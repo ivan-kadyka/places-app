@@ -1,4 +1,4 @@
-import { IActivity } from 'src/place/models/IActivity';
+import { IActivity } from 'src/activity/models/IActivity';
 
 export interface IPlaceDetails {
   id: string;

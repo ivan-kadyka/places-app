@@ -1,20 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { IActivity } from 'src/place/models/IActivity';
+import { IActivity } from 'src/activity/models/IActivity';
 import { IPlaceDetails } from 'src/place/models/IPlaceDetails';
-import { IWeatherService } from '../weather/weather.service.interface';
-import { IActivityScoreService } from './details/activity-scrore/activity-scoring.service.interface';
+import { IActivityScoreService } from 'src/activity/activity-scoring.service.interface';
 import { RecommendationLevel } from '../weather/weather.types';
-import { ACTIVITIES } from 'src/place/models/ActivityType';
+import { ACTIVITIES } from 'src/activity/models/ActivityType';
 import { IPlaceDetailsParams, IPlaceService, ISearchPlacesParams } from 'src/place/place.service.interface';
 import { IPlace } from 'src/place/models/IPlace';
 import { IDBContext } from 'src/database/db-context.interface';
 import { OpenMeteoPlaceSearchService } from 'src/weather/search/open-meteo-place-search.service';
+import { IWeatherForecastService } from 'src/weather/weather-forecaset.service.interface';
 
 @Injectable()
 export class PlaceService implements IPlaceService {
   constructor(
-    private readonly weatherService: IWeatherService,
-    private readonly scoringService: IActivityScoreService,
+    private readonly weatherService: IWeatherForecastService,
+    private readonly activityScoringService: IActivityScoreService,
     private readonly dbContext: IDBContext,
     private readonly openMeteoSearchService: OpenMeteoPlaceSearchService,
   ) {}
@@ -56,13 +56,11 @@ export class PlaceService implements IPlaceService {
       throw new NotFoundException(`Place ${placeName} not found`);
     }
 
-    const weatherForecast = await this.weatherService.getWeatherByPlace(
-      place
-    );
+    const weatherForecast = await this.weatherService.getWeatherByPlace(place);
 
     const activities: IActivity[] = ACTIVITIES.map((activityType) => {
       const scoreResults = weatherForecast.daily.map((day) =>
-        this.scoringService.scoreActivities(weatherForecast.place, day),
+        this.activityScoringService.getActivities(place, day),
       );
 
       const avgPercentage =
@@ -105,8 +103,8 @@ export class PlaceService implements IPlaceService {
      activities.sort((a, b) => b.score.percentage - a.score.percentage)
 
     return {
-      id: weatherForecast.place.id,
-      placeName: weatherForecast.place.name,
+      id: place.id,
+      placeName: place.name,
       dateRange: {
         from: fromDate,
         to: toDate,

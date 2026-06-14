@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { OpenMeteoService } from './open-meteo.service';
 import { WeatherCacheService } from './weather-cache.service';
-import { IWeatherService } from './weather.service.interface';
+import { IWeatherForecastService } from './weather-forecaset.service.interface';
 import { WeatherService } from './weather.service';
 import { OpenMeteoPlaceSearchService } from './search/open-meteo-place-search.service';
 
@@ -10,7 +10,7 @@ import { OpenMeteoPlaceSearchService } from './search/open-meteo-place-search.se
     OpenMeteoService,
     WeatherCacheService,
     {
-      provide: IWeatherService,
+      provide: IWeatherForecastService,
       useClass: WeatherService,
     },
     OpenMeteoPlaceSearchService,
@@ -19,7 +19,7 @@ import { OpenMeteoPlaceSearchService } from './search/open-meteo-place-search.se
     OpenMeteoService,
     OpenMeteoPlaceSearchService,
     WeatherCacheService,
-    IWeatherService
+    IWeatherForecastService
   ],
 })
 export class WeatherModule {}

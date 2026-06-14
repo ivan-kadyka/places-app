@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { PlaceApiController } from './place-api.controller';
 import { PlaceApiResolver } from './place-api.resolver';
-import { IActivityScoreService } from './details/activity-scrore/activity-scoring.service.interface';
-import { ActivityScoringService } from './details/activity-scrore/activity-scoring.service';
+import { IActivityScoreService } from '../activity/activity-scoring.service.interface';
+import { ActivityScoringService } from '../activity/activity-scoring.service';
 import { PlaceService } from './place.service';
 import { WeatherModule } from '../weather/weather.module';
 import { IPlaceService } from 'src/place/place.service.interface';

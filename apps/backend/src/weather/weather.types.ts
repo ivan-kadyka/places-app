@@ -1,4 +1,4 @@
-import { ActivityType } from "src/place/models/ActivityType";
+import { ActivityType } from "src/activity/models/ActivityType";
 
 
 export interface DailyWeatherPoint {
