@@ -33,7 +33,6 @@ export class PrismaWeatherDaySnapshotRepository implements IWeatherDaySnapshotRe
   }
 
   async createMany(data: Array<Omit<WeatherDaySnapshotEntity, 'id' | 'createdAt' | 'updatedAt'>>): Promise<WeatherDaySnapshotEntity[]> {
-    const now = new Date();
     const results = await Promise.all(
       data.map(item =>
         this.prisma.weatherDaySnapshot.create({
@@ -41,8 +40,7 @@ export class PrismaWeatherDaySnapshotRepository implements IWeatherDaySnapshotRe
             providerType: item.providerType,
             date: item.date,
             snapshot: item.snapshot as Prisma.InputJsonValue,
-            placeId: item.placeId,
-            updatedAt: now,
+            placeId: item.placeId
           },
         })
       )
