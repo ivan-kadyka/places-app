@@ -11,7 +11,7 @@ import { IWeatherForecast } from 'src/domains/weather/models/weather-forecast';
 export class ActivityScoringService implements IActivityScoreService {
 
 getActivities(place: IPlace, weatherForecast: IWeatherForecast): IActivity[] {
-  const weatherPoint = aggregateForecast(weatherForecast.daily);
+  const weatherPoint = aggregateForecast(weatherForecast.days);
 
   const scores: Record<ActivityType, number> = {
     [ActivityType.SKIING]: scoreSkiing(place, weatherPoint),

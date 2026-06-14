@@ -42,8 +42,8 @@ export class OpenMeteoService {
       throw new Error(`Forecast fetch failed with status ${response.status}`);
     }
 
-    const result = await response.json()
+    const result = await response.json()  as OpenMeteoForecastResponse
 
-    return result as OpenMeteoForecastResponse;
+    return result
   }
 }

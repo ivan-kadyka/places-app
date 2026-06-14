@@ -2,25 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IDBContext } from '../../database/db-context.interface';
 import { OpenMeteoService } from './open-meteo.service';
-import { DailyWeatherPoint } from './weather.types';
+import { IDayWeatherSnapshot, IWeatherSnapshot } from "./models/weather-snapshot";
 import { IPlace } from "../place/models/place";
 import { deserializeDailyForecast} from './forecast.utils';
 import { IDateRange } from 'src/types/date-range';
 import { IWeatherForecastService } from 'src/domains/weather/weather-forecast.service.interface';
 import { IWeatherForecast } from 'src/domains/weather/models/weather-forecast';
 
-interface WeatherDaySnapshotData {
-  temperatureMax: number;
-  temperatureMin: number;
-  precipitationSum: number;
-  rainSum: number;
-  snowfallSum: number;
-  windSpeedMax: number;
-  windGustsMax: number;
-  sunshineDuration: number;
-  weatherCode: number;
-  precipitationProbabilityMax: number;
-}
 
 @Injectable()
 export class WeatherForecastService implements IWeatherForecastService{
@@ -53,10 +41,10 @@ export class WeatherForecastService implements IWeatherForecastService{
       });
 
       if (validSnapshots.length === cachedSnapshots.length) {
-        const daily: DailyWeatherPoint[] = validSnapshots.map(snapshot => {
-          const data = snapshot.snapshot as WeatherDaySnapshotData;
+        const daily: IDayWeatherSnapshot[] = validSnapshots.map(snapshot => {
+          const data = snapshot.snapshot as IWeatherSnapshot;
           return {
-            date: snapshot.date.toISOString().split('T')[0],
+            date: snapshot.date,
             temperatureMax: data.temperatureMax,
             temperatureMin: data.temperatureMin,
             precipitationSum: data.precipitationSum,
@@ -77,7 +65,7 @@ export class WeatherForecastService implements IWeatherForecastService{
           placeId: place.id,
           fetchedAt: oldestUpdatedAt,
           expiresAt,
-          daily
+          days: daily
         };
       }
     }
@@ -99,19 +87,8 @@ export class WeatherForecastService implements IWeatherForecastService{
     await this.dbContext.weatherDaySnapshots.createMany(
       daily.map(dayPoint => ({
         providerType: 'open-meteo',
-        date: new Date(dayPoint.date),
-        snapshot: {
-          temperatureMax: dayPoint.temperatureMax,
-          temperatureMin: dayPoint.temperatureMin,
-          precipitationSum: dayPoint.precipitationSum,
-          rainSum: dayPoint.rainSum,
-          snowfallSum: dayPoint.snowfallSum,
-          windSpeedMax: dayPoint.windSpeedMax,
-          windGustsMax: dayPoint.windGustsMax,
-          sunshineDuration: dayPoint.sunshineDuration,
-          weatherCode: dayPoint.weatherCode,
-          precipitationProbabilityMax: dayPoint.precipitationProbabilityMax,
-        },
+        date: dayPoint.date,
+        snapshot: dayPoint,
         placeId: place.id,
       }))
     );
@@ -122,7 +99,7 @@ export class WeatherForecastService implements IWeatherForecastService{
       placeId: place.id,
       fetchedAt,
       expiresAt,
-      daily
+      days: daily
     };
   }
 

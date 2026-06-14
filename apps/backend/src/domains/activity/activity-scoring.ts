@@ -1,12 +1,12 @@
 
 import { IPlace } from 'src/domains/place/models/place';
-import { DailyWeatherPoint, WeatherPoint } from '../weather/weather.types';
+import { IDayWeatherSnapshot, IWeatherSnapshot } from "../weather/models/weather-snapshot";
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
-function averageTemperature(day: WeatherPoint): number {
+function averageTemperature(day: IWeatherSnapshot): number {
   return (day.temperatureMax + day.temperatureMin) / 2;
 }
 
@@ -14,7 +14,7 @@ function isStormWeatherCode(code: number): boolean {
   return code >= 95;
 }
 
-export function scoreSkiing(place: IPlace, weather: WeatherPoint): number {
+export function scoreSkiing(place: IPlace, weather: IWeatherSnapshot): number {
 
   if (place.elevation &&  place.elevation < 200){
    return 0
@@ -43,7 +43,7 @@ export function scoreSkiing(place: IPlace, weather: WeatherPoint): number {
   return clamp(score, 0, 100);
 }
 
-export function scoreSurfing(place: IPlace, weather: WeatherPoint): number {
+export function scoreSurfing(place: IPlace, weather: IWeatherSnapshot): number {
 
   if (place.elevation && place.elevation > 100){
     return 0
@@ -67,7 +67,7 @@ export function scoreSurfing(place: IPlace, weather: WeatherPoint): number {
 }
 
 // Average daily points into a single representative forecast
-export function aggregateForecast(daily: DailyWeatherPoint[]) : WeatherPoint {
+export function aggregateForecast(daily: IDayWeatherSnapshot[]) : IWeatherSnapshot {
   const n = daily.length;
   return {
     temperatureMax: daily.reduce((s, d) => s + d.temperatureMax, 0) / n,
@@ -84,7 +84,7 @@ export function aggregateForecast(daily: DailyWeatherPoint[]) : WeatherPoint {
 }
 
 
-export function scoreOutdoorSightseeing(day: WeatherPoint): number {
+export function scoreOutdoorSightseeing(day: IWeatherSnapshot): number {
   let score = 50;
   const avgTemp = averageTemperature(day);
 
@@ -111,7 +111,7 @@ export function scoreOutdoorSightseeing(day: WeatherPoint): number {
   return clamp(score, 0, 100);
 }
 
-export function scoreIndoorSightseeing(weather: WeatherPoint): number {
+export function scoreIndoorSightseeing(weather: IWeatherSnapshot): number {
   const outdoorScore = scoreOutdoorSightseeing(weather);
   let score = 100 - outdoorScore * 0.7;
   const avgTemp = averageTemperature(weather);
