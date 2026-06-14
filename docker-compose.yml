@@ -7,11 +7,11 @@ services:
       POSTGRES_PASSWORD: weather
       POSTGRES_DB: weather_app
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U weather']
+      test: ["CMD-SHELL", "pg_isready -U weather"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,7 +26,8 @@ services:
       PORT: 8000
       WEATHER_CACHE_TTL_HOURS: 6
     ports:
-      - '8000:8000'
+      - "8000:8000"
+      - "5555:5555"
     depends_on:
       postgres:
         condition: service_healthy
@@ -37,7 +38,7 @@ services:
       dockerfile: apps/frontend/Dockerfile
     container_name: weather-app-frontend
     ports:
-      - '3000:3000'
+      - "3000:3000"
     depends_on:
       - backend
 
