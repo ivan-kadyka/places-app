@@ -1,6 +1,6 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { DateRangeDto } from './date-range.dto';
-import { ActivityDto } from '../../activity/dto/activity.dto';
+import { ActivityDto } from '../../activities/dto/activity.dto';
 
 @ObjectType()
 export class PlaceDetailsDto {

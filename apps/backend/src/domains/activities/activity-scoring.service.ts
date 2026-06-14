@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { IActivityScoreService } from './activity-scoring.service.interface';
-import { RecommendationLevel } from "src/domains/activity/models/recommendation-level";
+import { RecommendationLevel } from "src/domains/activities/models/recommendation-level";
 import { aggregateForecast, scoreIndoorSightseeing, scoreOutdoorSightseeing, scoreSkiing, scoreSurfing } from './activity-scoring';
-import { ACTIVITIES, ActivityType } from 'src/domains/activity/models/activity-type';
+import { ACTIVITIES, ActivityType } from 'src/domains/activities/models/activity-type';
 import { IPlace } from 'src/domains/place/models/place';
-import { IActivity } from 'src/domains/activity/models/activity';
+import { IActivity } from 'src/domains/activities/models/activity';
 import { IWeatherForecast } from 'src/domains/weather/models/weather-forecast';
 import { IWeatherSnapshot } from 'src/domains/weather/models/weather-snapshot';
 

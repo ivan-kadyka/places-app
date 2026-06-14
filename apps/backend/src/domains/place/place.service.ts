@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { IPlaceDetails } from 'src/domains/place/models/place-details';
-import { IActivityScoreService } from 'src/domains/activity/activity-scoring.service.interface';
+import { IActivityScoreService } from 'src/domains/activities/activity-scoring.service.interface';
 import { IPlaceDetailsParams, IPlaceService, ISearchPlacesParams } from 'src/domains/place/place.service.interface';
 import { IPlace } from 'src/domains/place/models/place';
 import { IDBContext } from 'src/database/db-context.interface';
