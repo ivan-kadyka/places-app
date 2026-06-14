@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql';
-import { RecommendationLevel } from "src/activity/models/recommendation-level";
+import { RecommendationLevel } from "src/domains/activity/models/recommendation-level";
 
 registerEnumType(RecommendationLevel, {
   name: 'RecommendationLevel',

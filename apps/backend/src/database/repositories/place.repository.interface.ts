@@ -1,4 +1,4 @@
-import { IPlace } from "src/place/models/place";
+import { IPlace } from "src/domains/place/models/place";
 
 export interface ISearchRepositoryParams {
   name: string,

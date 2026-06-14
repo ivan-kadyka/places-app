@@ -5,7 +5,7 @@ import { IActivityScoreService } from '../activity/activity-scoring.service.inte
 import { ActivityScoringService } from '../activity/activity-scoring.service';
 import { PlaceService } from './place.service';
 import { WeatherModule } from '../weather/weather.module';
-import { IPlaceService } from 'src/place/place.service.interface';
+import { IPlaceService } from 'src/domains/place/place.service.interface';
 
 @Module({
   imports: [WeatherModule],

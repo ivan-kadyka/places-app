@@ -1,5 +1,5 @@
-import { ActivityType } from "src/activity/models/activity-type";
-import { RecommendationLevel } from "src/activity/models/recommendation-level";
+import { ActivityType } from "src/domains/activity/models/activity-type";
+import { RecommendationLevel } from "src/domains/activity/models/recommendation-level";
 
 export interface DailyWeatherPoint  extends WeatherPoint {
   date: string;

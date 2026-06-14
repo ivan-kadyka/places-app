@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { IPlaceDetails } from 'src/place/models/place-details';
-import { IActivityScoreService } from 'src/activity/activity-scoring.service.interface';
-import { IPlaceDetailsParams, IPlaceService, ISearchPlacesParams } from 'src/place/place.service.interface';
-import { IPlace } from 'src/place/models/place';
+import { IPlaceDetails } from 'src/domains/place/models/place-details';
+import { IActivityScoreService } from 'src/domains/activity/activity-scoring.service.interface';
+import { IPlaceDetailsParams, IPlaceService, ISearchPlacesParams } from 'src/domains/place/place.service.interface';
+import { IPlace } from 'src/domains/place/models/place';
 import { IDBContext } from 'src/database/db-context.interface';
-import { OpenMeteoPlaceSearchService } from 'src/weather/search/open-meteo-place-search.service';
-import { IWeatherForecastService } from 'src/weather/weather-forecast.service.interface';
+import { OpenMeteoPlaceSearchService } from 'src/domains/weather/search/open-meteo-place-search.service';
+import { IWeatherForecastService } from 'src/domains/weather/weather-forecast.service.interface';
 import { IDateRange } from 'src/types/date-range';
 
 @Injectable()

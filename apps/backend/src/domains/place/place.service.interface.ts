@@ -1,5 +1,5 @@
-import { IPlace } from "src/place/models/place";
-import { IPlaceDetails } from "src/place/models/place-details";
+import { IPlace } from "src/domains/place/models/place";
+import { IPlaceDetails } from "src/domains/place/models/place-details";
 import { IDateRange } from "src/types/date-range";
 
 export interface IPlaceDetailsParams {
@@ -14,6 +14,6 @@ export interface ISearchPlacesParams {
 }
 
 export abstract class IPlaceService {
-  abstract getDetails(params: IPlaceDetailsParams): Promise<IPlaceDetails>
   abstract search(params: ISearchPlacesParams): Promise<IPlace[]>
+  abstract getDetails(params: IPlaceDetailsParams): Promise<IPlaceDetails>
 }

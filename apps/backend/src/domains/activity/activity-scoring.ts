@@ -1,5 +1,5 @@
 
-import { IPlace } from 'src/place/models/place';
+import { IPlace } from 'src/domains/place/models/place';
 import { DailyWeatherPoint, WeatherPoint } from '../weather/weather.types';
 
 function clamp(value: number, min: number, max: number): number {

@@ -2,7 +2,7 @@ import { Resolver, Query, Args } from '@nestjs/graphql';
 import { PlaceDto } from './dto/place.dto';
 import { PlaceDetailsDto } from './dto/place-details.dto';
 import { Int } from '@nestjs/graphql';
-import { IPlaceService } from 'src/place/place.service.interface';
+import { IPlaceService } from 'src/domains/place/place.service.interface';
 
 @Resolver()
 export class PlaceApiResolver {

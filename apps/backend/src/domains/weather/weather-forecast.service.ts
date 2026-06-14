@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IDBContext } from '../database/db-context.interface';
+import { IDBContext } from '../../database/db-context.interface';
 import { OpenMeteoService } from './open-meteo.service';
 import { OpenMeteoDailyForecast} from './weather.types';
 import { IPlace } from "../place/models/place";
 import { deserializeDailyForecast, serializeDailyForecast} from './forecast.utils';
 import { IDateRange } from 'src/types/date-range';
-import { IWeatherForecastService } from 'src/weather/weather-forecast.service.interface';
-import { IWeatherForecast } from 'src/weather/models/weather-forecast';
+import { IWeatherForecastService } from 'src/domains/weather/weather-forecast.service.interface';
+import { IWeatherForecast } from 'src/domains/weather/models/weather-forecast';
 
 
 @Injectable()

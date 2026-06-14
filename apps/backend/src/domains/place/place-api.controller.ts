@@ -1,8 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { PlaceDetailsRequestDto } from './dto/place-details-request.dto';
 import { SearchPlacesQueryDto } from './dto/search-places-query.dto';
-import { IPlace } from "src/place/models/place";
-import { IPlaceService } from 'src/place/place.service.interface';
+import { IPlace } from "src/domains/place/models/place";
+import { IPlaceService } from 'src/domains/place/place.service.interface';
 
 @Controller('place')
 export class PlaceApiController {
