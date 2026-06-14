@@ -27,10 +27,23 @@ services:
       WEATHER_CACHE_TTL_HOURS: 6
     ports:
       - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  prisma-studio:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: weather-app-prisma-studio
+    environment:
+      DATABASE_URL: postgresql://weather:weather@postgres:5432/weather_app?schema=public
+    ports:
       - "5555:5555"
     depends_on:
       postgres:
         condition: service_healthy
+    command: pnpm run studio:docker
 
   frontend:
     build:
