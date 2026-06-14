@@ -1,33 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { IActivityScoreService } from './activity-scoring.service.interface';
-import { DailyWeatherPoint } from '../weather/weather.types';
 import { RecommendationLevel } from "src/activity/models/recommendation-level";
-import { activityScorers } from './activity-scoring';
-import { ACTIVITIES } from 'src/activity/models/activity-type';
+import { aggregateForecast, scoreIndoorSightseeing, scoreOutdoorSightseeing, scoreSkiing, scoreSurfing } from './activity-scoring';
+import { ActivityType } from 'src/activity/models/activity-type';
 import { IPlace } from 'src/place/models/place';
 import { IActivity } from 'src/activity/models/activity';
+import { IWeatherForecast } from 'src/weather/models/weather-forecast';
 
 @Injectable()
 export class ActivityScoringService implements IActivityScoreService {
-  getActivities(
-    place: IPlace,
-    weather: DailyWeatherPoint,
-  ): IActivity[] {
-    return ACTIVITIES.map((activityType): IActivity => {
-      const scorer = activityScorers[activityType];
-      const rawScore = scorer(weather);
-      
-      const level = this.getRecommendationLevel(rawScore);
-      
-      return {
-        type: activityType,
-        score: {
-          level: level,
-          percentage: Math.round(rawScore * 10) / 10,
-        },
-      };
-    });
+
+getActivities(place: IPlace, weatherForecast: IWeatherForecast): IActivity[] {
+  const weatherPoint = aggregateForecast(weatherForecast.daily);
+
+  const scores: Record<ActivityType, number> = {
+    [ActivityType.SKIING]: scoreSkiing(place, weatherPoint),
+    [ActivityType.SURFING]: scoreSurfing(place, weatherPoint),
+    [ActivityType.OUTDOOR_SIGHTSEEING]: scoreOutdoorSightseeing(weatherPoint),
+    [ActivityType.INDOOR_SIGHTSEEING]: scoreIndoorSightseeing(weatherPoint),
   }
+
+  return Object.entries(scores).map(([type, scoreValue]) => {
+    const percentage = Math.round(scoreValue);
+    return {
+      type: type as ActivityType,
+      score: {
+        percentage,
+        level: this.getRecommendationLevel(percentage),
+      },
+    };
+  });
+}
 
   private getRecommendationLevel(score: number): RecommendationLevel {
     if (score < 20) return RecommendationLevel.Unsuitable;

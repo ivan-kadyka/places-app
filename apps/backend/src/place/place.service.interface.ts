@@ -1,8 +1,10 @@
 import { IPlace } from "src/place/models/place";
 import { IPlaceDetails } from "src/place/models/place-details";
+import { IDateRange } from "src/types/date-range";
 
 export interface IPlaceDetailsParams {
   name: string;
+  dateRange?: IDateRange
 }
 
 export interface ISearchPlacesParams {

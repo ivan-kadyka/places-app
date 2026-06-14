@@ -8,7 +8,7 @@ registerEnumType(RecommendationLevel, {
 @ObjectType()
 export class ActivityScoreDto {
   @Field(() => RecommendationLevel)
-  type: RecommendationLevel;
+  level: RecommendationLevel;
 
   @Field(() => Int)
   percentage: number;

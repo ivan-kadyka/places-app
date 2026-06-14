@@ -1,14 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { IActivity } from 'src/activity/models/activity';
 import { IPlaceDetails } from 'src/place/models/place-details';
 import { IActivityScoreService } from 'src/activity/activity-scoring.service.interface';
-import { RecommendationLevel } from "src/activity/models/recommendation-level";
-import { ACTIVITIES } from 'src/activity/models/activity-type';
 import { IPlaceDetailsParams, IPlaceService, ISearchPlacesParams } from 'src/place/place.service.interface';
 import { IPlace } from 'src/place/models/place';
 import { IDBContext } from 'src/database/db-context.interface';
 import { OpenMeteoPlaceSearchService } from 'src/weather/search/open-meteo-place-search.service';
-import { IWeatherForecastService } from 'src/weather/weather-forecaset.service.interface';
+import { IWeatherForecastService } from 'src/weather/weather-forecast.service.interface';
+import { IDateRange } from 'src/types/date-range';
 
 @Injectable()
 export class PlaceService implements IPlaceService {
@@ -46,67 +44,37 @@ export class PlaceService implements IPlaceService {
 
     const placeName = params.name
 
-    const searchResult = await this.search({ name: placeName, count: 1 });
-
-    const place = searchResult[0]
+    const places = await this.search({ name: placeName, count: 1 });
     
-    if (!place) {
+    if (places.length === 0) {
       throw new NotFoundException(`Place ${placeName} not found`);
     }
 
-    const weatherForecast = await this.weatherService.getWeatherByPlace(place);
+    const place = places[0]
 
-    const activities: IActivity[] = ACTIVITIES.map((activityType) => {
-      const scoreResults = weatherForecast.daily.map((day) =>
-        this.activityScoringService.getActivities(place, day),
-      );
+    const dateRange = this.getDateRangeOrNextWeek(params.dateRange)
 
-      const avgPercentage =
-        scoreResults.reduce((sum, dayScores) => {
-          const activityScore = dayScores.find((s) => s.type === activityType);
-          return sum + (activityScore ? activityScore.score.percentage : 0);
-        }, 0) / scoreResults.length;
+    const weatherForecast = await this.weatherService.getWeatherByPlace(place, dateRange);
 
-      const avgLevel =
-        scoreResults.reduce((sum, dayScores) => {
-          const activityScore = dayScores.find((s) => s.type === activityType);
-          return (
-            sum +
-            (activityScore
-              ? activityScore.score.level
-              : RecommendationLevel.Unsuitable)
-          );
-        }, 0) / scoreResults.length;
-
-      const roundedLevel = Math.max(
-        RecommendationLevel.Unsuitable,
-        Math.min(RecommendationLevel.Ideal, Math.round(avgLevel)),
-      );
-
-      const activity: IActivity =  {
-        type: activityType,
-        score: {
-          level: roundedLevel,
-          percentage: Math.round(avgPercentage),
-        },
-      }
-
-      return activity
-    });
-
-    const fromDate = new Date(weatherForecast.daily[0].date);
-    const toDate = new Date( weatherForecast.daily[weatherForecast.daily.length - 1].date);
-
-    activities.sort((a, b) => b.score.percentage - a.score.percentage)
+    const activities = await this.activityScoringService.getActivities(place, weatherForecast);
 
     return {
       id: place.id,
-      placeName: place.name,
-      dateRange: {
-        from: fromDate,
-        to: toDate,
-      },
-      activities,
-    };
+      name: place.name,
+      dateRange,
+      activities
+    }
+  }
+
+  getDateRangeOrNextWeek(dateRange?: IDateRange): IDateRange {
+    if (dateRange) {
+       return dateRange;
+  }
+
+  const from = new Date();
+  const to = new Date(from);
+  to.setDate(to.getDate() + 7);
+
+  return { from, to };
   }
 }

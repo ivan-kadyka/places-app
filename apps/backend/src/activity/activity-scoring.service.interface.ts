@@ -1,9 +1,7 @@
 import { IPlace } from 'src/place/models/place';
-import {
-  DailyWeatherPoint,
-} from '../weather/weather.types';
 import { IActivity } from 'src/activity/models/activity';
+import { IWeatherForecast } from 'src/weather/models/weather-forecast';
 
 export abstract class IActivityScoreService {
-  abstract getActivities(place: IPlace, weather: DailyWeatherPoint): IActivity[];
+  abstract getActivities(place: IPlace, weatherForecast: IWeatherForecast): IActivity[];
 }

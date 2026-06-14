@@ -3,11 +3,8 @@ import { ActivityScoreDto } from './activity-score.dto';
 
 @ObjectType()
 export class ActivityDto {
-  @Field(() => ID)
-  id: string;
-
   @Field()
-  name: string;
+  type: string;
 
   @Field(() => ActivityScoreDto)
   score: ActivityScoreDto;

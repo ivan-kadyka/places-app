@@ -1,18 +1,20 @@
 import { ActivityType } from "src/activity/models/activity-type";
 import { RecommendationLevel } from "src/activity/models/recommendation-level";
 
-
-export interface DailyWeatherPoint {
+export interface DailyWeatherPoint  extends WeatherPoint {
   date: string;
+}
+
+export interface WeatherPoint {
   temperatureMax: number;
   temperatureMin: number;
   precipitationSum: number;
   rainSum: number;
   snowfallSum: number;
-  weatherCode: number;
   windSpeedMax: number;
   windGustsMax: number;
   sunshineDuration: number;
+  weatherCode: number;
   precipitationProbabilityMax: number;
 }
 
