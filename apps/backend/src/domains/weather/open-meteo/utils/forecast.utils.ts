@@ -1,5 +1,5 @@
 
-import { OpenMeteoDailyForecast, OpenMeteoForecastResponse } from "../types/open-meteo-forecast-response";
+import { OpenMeteoDailyForecast, OpenMeteoForecastResponse } from "../dto/open-meteo-forecast-response";
 import { IDayWeatherSnapshot } from "../../models/weather-snapshot";
 
 export function parseDailyForecast(response: OpenMeteoForecastResponse): IDayWeatherSnapshot[] {

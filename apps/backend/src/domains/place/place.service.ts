@@ -4,9 +4,9 @@ import { IActivityScoreService } from 'src/domains/activities/activity-scoring.s
 import { IPlaceDetailsParams, IPlaceService, ISearchPlacesParams } from 'src/domains/place/place.service.interface';
 import { IPlace } from 'src/domains/place/models/place';
 import { IDBContext } from 'src/database/db-context.interface';
-import { OpenMeteoPlaceSearchService } from 'src/domains/weather/open-meteo/search/open-meteo-place-search.service';
 import { IWeatherForecastService } from 'src/domains/weather/weather-forecast.service.interface';
 import { getDateRangeOrNextWeek } from 'src/utils/date-utils';
+import { IPlaceSearchService } from 'src/domains/place/search/place-search.service.interface';
 
 @Injectable()
 export class PlaceService implements IPlaceService {
@@ -14,28 +14,28 @@ export class PlaceService implements IPlaceService {
     private readonly weatherService: IWeatherForecastService,
     private readonly activityScoringService: IActivityScoreService,
     private readonly dbContext: IDBContext,
-    private readonly openMeteoSearchService: OpenMeteoPlaceSearchService,
+    private readonly placeSearchService: IPlaceSearchService,
   ) {}
 
   
   async search(params : ISearchPlacesParams): Promise<IPlace[]> {
   
       const {name: query, limit: count} = params;
-      // 1. Try database first
+      // 1. Try search in database first
       const places = await this.dbContext.places.search({ name: query, limit: count });
   
       if (places.length > 0) {
         return places;
       }
   
-      // 2. If no results, use OpenMeteo
-      const openMeteoResults = await this.openMeteoSearchService.search(params);
-      if (openMeteoResults.length === 0) {
+      // 2. If no results - search
+      const foundedPlaces = await this.placeSearchService.search(params);
+      if (foundedPlaces.length === 0) {
         return [];
       }
   
       // 3. Save to database
-      const savedPlaces = await this.dbContext.places.save(openMeteoResults);
+      const savedPlaces = await this.dbContext.places.save(foundedPlaces);
   
       return savedPlaces;
     }
