@@ -2,8 +2,10 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { IDBContext } from '../db-context.interface';
 import { IPlaceRepository } from '../repositories/place.repository.interface';
 import { IWeatherSnapshotRepository } from '../repositories/weather-snapshot.repository.interface';
+import { IWeatherDaySnapshotRepository } from '../repositories/weather-day-snapshot.repository.interface';
 import { PrismaPlaceRepository } from './prisma-place.repository';
 import { PrismaWeatherSnapshotRepository } from './prisma-weather-snapshot.repository';
+import { PrismaWeatherDaySnapshotRepository } from './prisma-weather-day-snapshot.repository';
 import { PrismaClient } from 'prisma/generated/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
@@ -15,6 +17,7 @@ export class PrismaDBContext extends IDBContext implements OnModuleInit, OnModul
 
   readonly places: IPlaceRepository;
   readonly weatherSnapshots: IWeatherSnapshotRepository;
+  readonly weatherDaySnapshots: IWeatherDaySnapshotRepository;
 
   constructor() {
     super();
@@ -23,6 +26,7 @@ export class PrismaDBContext extends IDBContext implements OnModuleInit, OnModul
     this.prisma = new PrismaClient({ adapter });
     this.places = new PrismaPlaceRepository(this.prisma);
     this.weatherSnapshots = new PrismaWeatherSnapshotRepository(this.prisma);
+    this.weatherDaySnapshots = new PrismaWeatherDaySnapshotRepository(this.prisma);
   }
 
   async onModuleInit(): Promise<void> {
@@ -45,11 +49,13 @@ export class PrismaDBContext extends IDBContext implements OnModuleInit, OnModul
 class PrismaTransactionDBContext extends IDBContext {
   readonly places: IPlaceRepository;
   readonly weatherSnapshots: IWeatherSnapshotRepository;
+  readonly weatherDaySnapshots: IWeatherDaySnapshotRepository;
 
   constructor(prisma: PrismaClient) {
     super();
     this.places = new PrismaPlaceRepository(prisma);
     this.weatherSnapshots = new PrismaWeatherSnapshotRepository(prisma);
+    this.weatherDaySnapshots = new PrismaWeatherDaySnapshotRepository(prisma);
   }
 
   async runInTransaction<T>(work: (context: IDBContext) => Promise<T>): Promise<T> {

@@ -25,7 +25,7 @@ export class PrismaWeatherSnapshotRepository implements IWeatherSnapshotReposito
       fetchedAt: result.fetchedAt,
       expiresAt: result.expiresAt,
       dailyData: result.dailyData as IMetaData,
-    };
+    }
   }
 
   async create(data: Omit<WeatherSnapshotEntity, 'id' | 'fetchedAt'> & { fetchedAt?: Date }): Promise<WeatherSnapshotEntity> {
