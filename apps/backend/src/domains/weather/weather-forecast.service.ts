@@ -8,7 +8,9 @@ import { deserializeDailyForecast} from './forecast.utils';
 import { IDateRange } from 'src/types/date-range';
 import { IWeatherForecastService } from 'src/domains/weather/weather-forecast.service.interface';
 import { IWeatherForecast } from 'src/domains/weather/models/weather-forecast';
-
+import { isSameDay } from 'date-fns';
+import { getDaysBetween, getDaysInRange } from 'src/utils/date-utils';
+import { CreateWeatherDaySnapshot } from 'src/database/repositories/weather-day-snapshot.repository.interface';
 
 @Injectable()
 export class WeatherForecastService implements IWeatherForecastService{
@@ -27,18 +29,19 @@ export class WeatherForecastService implements IWeatherForecastService{
   async getWeatherByPlace(place: IPlace, dateRange: IDateRange): Promise<IWeatherForecast> {
     const now = new Date()
 
-    const cachedSnapshots = await this.dbContext.weatherDaySnapshots.search(place.id, dateRange);
+    const cachedSnapshots = await this.dbContext.weatherDaySnapshots.search(place.id, dateRange)
 
-    const daysInRange = this.getDaysInRange(dateRange);
-    const cachedDates = new Set(cachedSnapshots.map(s => s.date.toISOString().split('T')[0]));
-    const allDaysCached = daysInRange.every(date => cachedDates.has(date));
+    const daysInRange = getDaysInRange(dateRange);
+    const allDaysCached = daysInRange.every(dayInRange => 
+      cachedSnapshots.some(cached => isSameDay(dayInRange, cached.date))
+    );
 
     if (allDaysCached && cachedSnapshots.length > 0) {
       const nowMs = now.getTime();
       const validSnapshots = cachedSnapshots.filter(s => {
-        const ageMs = nowMs - s.updatedAt.getTime();
-        return ageMs < this.cacheTtlMs;
-      });
+        const deltaAgeMs = nowMs - s.updatedAt.getTime()
+        return deltaAgeMs < this.cacheTtlMs
+      })
 
       if (validSnapshots.length === cachedSnapshots.length) {
         const daily: IDayWeatherSnapshot[] = validSnapshots.map(snapshot => {
@@ -76,7 +79,7 @@ export class WeatherForecastService implements IWeatherForecastService{
   private async refreshWeather(place: IPlace, dateRange: IDateRange): Promise<IWeatherForecast> {
     const {coordinate: {latitude, longitude}, timezone}  = place;
 
-    const days = this.getDaysBetween(dateRange);
+    const days = getDaysBetween(dateRange);
     const forecast = await this.openMeteo.fetchForecast(latitude, longitude, timezone, days);
     const daily = deserializeDailyForecast(forecast.daily);
     const fetchedAt = new Date();
@@ -85,15 +88,10 @@ export class WeatherForecastService implements IWeatherForecastService{
     await this.dbContext.weatherDaySnapshots.delete(place.id, dateRange);
 
     await this.dbContext.weatherDaySnapshots.createMany(
-      daily.map(dayPoint => ({
-        providerType: 'open-meteo',
-        date: dayPoint.date,
-        snapshot: dayPoint,
-        placeId: place.id,
-      }))
-    );
+      daily.map(dayPoint => (this.convertToCreateWeatherDaySnapshot(place, dayPoint)))
+    )
 
-    this.logger.log(`Refreshed weather cache for location ${place.id} (expires ${expiresAt.toISOString()})`);
+    this.logger.log(`Refreshed weather cache for location ${place.id} (updatedAt ${fetchedAt.toISOString()})`);
 
     return {
       placeId: place.id,
@@ -103,19 +101,15 @@ export class WeatherForecastService implements IWeatherForecastService{
     };
   }
 
-  private getDaysBetween(range: IDateRange): number {
-    const msPerDay = 1000 * 60 * 60 * 24;
-    return Math.round((range.to.getTime() - range.from.getTime()) / msPerDay);
-  }
+  private convertToCreateWeatherDaySnapshot(place: IPlace, dayPoint: IDayWeatherSnapshot): CreateWeatherDaySnapshot {
+    
+    const {date, ...snapshot} = dayPoint;
 
-  private getDaysInRange(range: IDateRange): string[] {
-    const days: string[] = [];
-    const current = new Date(range.from);
-    const end = new Date(range.to);
-    while (current <= end) {
-      days.push(current.toISOString().split('T')[0]);
-      current.setDate(current.getDate() + 1);
+    return {
+      providerType: 'open-meteo',
+      date,
+      snapshot: snapshot,
+      placeId: place.id,
     }
-    return days;
   }
 }

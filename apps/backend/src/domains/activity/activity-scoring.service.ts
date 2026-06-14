@@ -10,8 +10,8 @@ import { IWeatherForecast } from 'src/domains/weather/models/weather-forecast';
 @Injectable()
 export class ActivityScoringService implements IActivityScoreService {
 
-getActivities(place: IPlace, weatherForecast: IWeatherForecast): IActivity[] {
-  const weatherPoint = aggregateForecast(weatherForecast.days);
+  async getActivities(place: IPlace, weatherForecast: IWeatherForecast): Promise<IActivity[]> {
+    const weatherPoint = aggregateForecast(weatherForecast.days);
 
   const scores: Record<ActivityType, number> = {
     [ActivityType.SKIING]: scoreSkiing(place, weatherPoint),
@@ -20,7 +20,7 @@ getActivities(place: IPlace, weatherForecast: IWeatherForecast): IActivity[] {
     [ActivityType.INDOOR_SIGHTSEEING]: scoreIndoorSightseeing(weatherPoint),
   }
 
-  return Object.entries(scores).map(([type, scoreValue]) => {
+  const activities = Object.entries(scores).map(([type, scoreValue]) => {
     const percentage = Math.round(scoreValue);
     return {
       type: type as ActivityType,
@@ -30,6 +30,8 @@ getActivities(place: IPlace, weatherForecast: IWeatherForecast): IActivity[] {
       },
     };
   });
+
+  return await Promise.resolve(activities);
 }
 
   private getRecommendationLevel(score: number): RecommendationLevel {

@@ -6,7 +6,7 @@ import { IPlace } from 'src/domains/place/models/place';
 import { IDBContext } from 'src/database/db-context.interface';
 import { OpenMeteoPlaceSearchService } from 'src/domains/weather/search/open-meteo-place-search.service';
 import { IWeatherForecastService } from 'src/domains/weather/weather-forecast.service.interface';
-import { IDateRange } from 'src/types/date-range';
+import { getDateRangeOrNextWeek } from 'src/utils/date-utils';
 
 @Injectable()
 export class PlaceService implements IPlaceService {
@@ -52,7 +52,7 @@ export class PlaceService implements IPlaceService {
 
     const place = places[0]
 
-    const dateRange = this.getDateRangeOrNextWeek(params.dateRange)
+    const dateRange = getDateRangeOrNextWeek(params.dateRange)
 
     const weatherForecast = await this.weatherService.getWeatherByPlace(place, dateRange);
 
@@ -64,17 +64,5 @@ export class PlaceService implements IPlaceService {
       dateRange,
       activities
     }
-  }
-
-  private getDateRangeOrNextWeek(dateRange?: IDateRange): IDateRange {
-    if (dateRange) {
-       return dateRange;
-  }
-
-  const from = new Date();
-  const to = new Date(from);
-  to.setDate(to.getDate() + 7);
-
-  return { from, to };
   }
 }
