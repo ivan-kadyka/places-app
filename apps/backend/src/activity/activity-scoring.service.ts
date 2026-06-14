@@ -1,26 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { IActivityScoreService, IActivityScore } from './activity-scoring.service.interface';
-import { DailyWeatherPoint, RecommendationLevel } from '../weather/weather.types';
+import { IActivityScoreService } from './activity-scoring.service.interface';
+import { DailyWeatherPoint } from '../weather/weather.types';
+import { RecommendationLevel } from "src/activity/models/recommendation-level";
 import { activityScorers } from './activity-scoring';
-import { ACTIVITIES } from 'src/activity/models/ActivityType';
-import { IPlace } from 'src/place/models/IPlace';
+import { ACTIVITIES } from 'src/activity/models/activity-type';
+import { IPlace } from 'src/place/models/place';
+import { IActivity } from 'src/activity/models/activity';
 
 @Injectable()
 export class ActivityScoringService implements IActivityScoreService {
   getActivities(
     place: IPlace,
     weather: DailyWeatherPoint,
-  ): IActivityScore[] {
-    return ACTIVITIES.map((activity): IActivityScore => {
-      const scorer = activityScorers[activity];
+  ): IActivity[] {
+    return ACTIVITIES.map((activityType): IActivity => {
+      const scorer = activityScorers[activityType];
       const rawScore = scorer(weather);
       
       const level = this.getRecommendationLevel(rawScore);
       
       return {
-        type: activity,
+        type: activityType,
         score: {
-          type: level,
+          level: level,
           percentage: Math.round(rawScore * 10) / 10,
         },
       };

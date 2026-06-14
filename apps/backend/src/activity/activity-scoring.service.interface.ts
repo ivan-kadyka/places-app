@@ -1,18 +1,9 @@
-import { IPlace } from 'src/place/models/IPlace';
+import { IPlace } from 'src/place/models/place';
 import {
   DailyWeatherPoint,
-  RecommendationLevel,
 } from '../weather/weather.types';
-import { ActivityType } from "src/activity/models/ActivityType";
-
-export interface IActivityScore {
-  type: ActivityType;
-  score: {
-    type: RecommendationLevel;
-    percentage: number;
-  };
-}
+import { IActivity } from 'src/activity/models/activity';
 
 export abstract class IActivityScoreService {
-  abstract getActivities(place: IPlace, weather: DailyWeatherPoint): IActivityScore[];
+  abstract getActivities(place: IPlace, weather: DailyWeatherPoint): IActivity[];
 }

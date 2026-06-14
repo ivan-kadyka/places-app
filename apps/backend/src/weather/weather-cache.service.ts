@@ -6,7 +6,7 @@ import {
   DailyWeatherPoint,
   OpenMeteoDailyForecast,
 } from './weather.types';
-import { IPlace } from "../place/models/IPlace";
+import { IPlace } from "../place/models/place";
 import {
   deserializeDailyForecast,
   serializeDailyForecast,

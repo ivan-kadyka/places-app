@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GeocodingResponse } from '../weather.types';
-import { IPlace } from "src/place/models/IPlace";
+import { IPlace } from "src/place/models/place";
 import { ISearchPlacesParams } from 'src/place/place.service.interface';
 
 const GEOCODING_BASE = 'https://geocoding-api.open-meteo.com/v1/search';

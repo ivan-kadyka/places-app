@@ -1,4 +1,5 @@
-import { ActivityType } from "src/activity/models/ActivityType";
+import { ActivityType } from "src/activity/models/activity-type";
+import { RecommendationLevel } from "src/activity/models/recommendation-level";
 
 
 export interface DailyWeatherPoint {
@@ -51,14 +52,6 @@ export interface GeocodingResult {
 
 export interface GeocodingResponse {
   results?: GeocodingResult[];
-}
-
-export enum RecommendationLevel {
-  Unsuitable = 1,
-  Poor = 2,
-  Average = 3,
-  Good = 4,
-  Ideal = 5,
 }
 
 export interface ActivityDayRanking {

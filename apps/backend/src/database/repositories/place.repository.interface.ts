@@ -1,4 +1,4 @@
-import { IPlace } from "src/place/models/IPlace";
+import { IPlace } from "src/place/models/place";
 export abstract class IPlaceRepository {
   abstract findById(id: string): Promise<IPlace | null>;
   abstract search(params: ISearchRepositoryParams): Promise<IPlace[]>;

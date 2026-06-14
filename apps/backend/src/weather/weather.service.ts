@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { IWeatherForecastService } from './weather-forecaset.service.interface';
-import { WeatherForecast } from './models/WeatherForecast';
+import { IWeatherForecast } from './models/weather-forecast';
 import { WeatherCacheService } from './weather-cache.service';
-import { IPlace } from "../place/models/IPlace";
+import { IPlace } from "../place/models/place";
 
 @Injectable()
 export class WeatherService implements IWeatherForecastService {
@@ -12,7 +12,7 @@ export class WeatherService implements IWeatherForecastService {
 
   async getWeatherByPlace(
     place: IPlace,
-  ): Promise<WeatherForecast> {
+  ): Promise<IWeatherForecast> {
     
     const {  openMeteoId} = place
 

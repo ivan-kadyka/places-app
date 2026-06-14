@@ -1,5 +1,5 @@
-import { IPlace } from "src/place/models/IPlace";
-import { IPlaceDetails } from "src/place/models/IPlaceDetails";
+import { IPlace } from "src/place/models/place";
+import { IPlaceDetails } from "src/place/models/place-details";
 
 export interface IPlaceDetailsParams {
   name: string;

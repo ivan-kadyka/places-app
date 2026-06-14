@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { IActivity } from 'src/activity/models/IActivity';
-import { IPlaceDetails } from 'src/place/models/IPlaceDetails';
+import { IActivity } from 'src/activity/models/activity';
+import { IPlaceDetails } from 'src/place/models/place-details';
 import { IActivityScoreService } from 'src/activity/activity-scoring.service.interface';
-import { RecommendationLevel } from '../weather/weather.types';
-import { ACTIVITIES } from 'src/activity/models/ActivityType';
+import { RecommendationLevel } from "src/activity/models/recommendation-level";
+import { ACTIVITIES } from 'src/activity/models/activity-type';
 import { IPlaceDetailsParams, IPlaceService, ISearchPlacesParams } from 'src/place/place.service.interface';
-import { IPlace } from 'src/place/models/IPlace';
+import { IPlace } from 'src/place/models/place';
 import { IDBContext } from 'src/database/db-context.interface';
 import { OpenMeteoPlaceSearchService } from 'src/weather/search/open-meteo-place-search.service';
 import { IWeatherForecastService } from 'src/weather/weather-forecaset.service.interface';
@@ -42,9 +42,7 @@ export class PlaceService implements IPlaceService {
       return savedPlaces;
     }
 
-  async getDetails(
-    params: IPlaceDetailsParams,
-  ): Promise<IPlaceDetails> {
+  async getDetails(params: IPlaceDetailsParams): Promise<IPlaceDetails> {
 
     const placeName = params.name
 
@@ -75,7 +73,7 @@ export class PlaceService implements IPlaceService {
           return (
             sum +
             (activityScore
-              ? activityScore.score.type
+              ? activityScore.score.level
               : RecommendationLevel.Unsuitable)
           );
         }, 0) / scoreResults.length;
@@ -85,22 +83,21 @@ export class PlaceService implements IPlaceService {
         Math.min(RecommendationLevel.Ideal, Math.round(avgLevel)),
       );
 
-      return {
-        id: activityType,
-        name: activityType,
+      const activity: IActivity =  {
+        type: activityType,
         score: {
-          type: roundedLevel,
+          level: roundedLevel,
           percentage: Math.round(avgPercentage),
         },
-      };
+      }
+
+      return activity
     });
 
     const fromDate = new Date(weatherForecast.daily[0].date);
-    const toDate = new Date(
-      weatherForecast.daily[weatherForecast.daily.length - 1].date,
-    );
+    const toDate = new Date( weatherForecast.daily[weatherForecast.daily.length - 1].date);
 
-     activities.sort((a, b) => b.score.percentage - a.score.percentage)
+    activities.sort((a, b) => b.score.percentage - a.score.percentage)
 
     return {
       id: place.id,
