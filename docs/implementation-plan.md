@@ -185,11 +185,11 @@ Define interfaces:
 
 ---
 
-## Definition of Done
+## TODO:
 
-- `pnpm install` works
-- `pnpm build` passes
-- `pnpm test` passes
-- Full local stack via Docker
-- REST + GraphQL both working
-- Docs explain everything clearly
+- Caching strategies(LRU or LFU) to avoid always interaction with DB layer
+- Docker image size optimization
+- More unit, functional, e2e tests
+- Setup CI/CD: automatic builds, tests, deployment to cloud provider(AWS)
+- Implement Frontend Web UI
+- More documentation
