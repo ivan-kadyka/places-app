@@ -2,27 +2,17 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useId, useMemo, useState } from "react";
+
+
 import {
   Card,
-  CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
-} from "../../components/ui/card";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../../components/ui/command";
-import {
-  getPlaceDetails,
-  searchPlaces,
-  type Place,
-  type PlaceDetails,
-} from "../../lib/graphql";
+  CardDescription,
+  CardContent,
+} from "../../infra/ui/card";
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "../../infra/ui/command";
+import { PlaceDetails, Place, searchPlaces, getPlaceDetails } from "../../lib/graphql";
 
 function useDebouncedValue(value: string, delayMs: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -145,7 +135,7 @@ export function PlaceSearch() {
     <main className="min-h-svh bg-[linear-gradient(180deg,rgba(241,248,247,0.94),rgba(248,250,252,1))] px-3.5 py-8 text-foreground sm:px-5 sm:py-14">
       <section className="mx-auto grid w-full max-w-[840px] gap-[18px]">
         <div className="grid gap-2.5 px-0 pb-3 pt-2">
-          <h1 className="max-w-[720px] text-[clamp(32px,5vw,56px)] font-bold leading-[1.04] text-[#10201e]">
+          <h1 className="max-w-[720px] text-[clamp(32px,5vw,56px)] font-bold leading-[1.04]">
             Find place activities
           </h1>
         </div>

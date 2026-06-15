@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import ReactQueryProvider from "./providers";
-import ReactQueryDevtoolPanel from "./infra/tanstack-query/ReactQueryDevtoolPanel";
+import ReactQueryProvider from "../src/infra/tanstack-query/react-query-provider";
+import ReactQueryDevtoolPanel from "../src/infra/tanstack-query/react-query-devtool-panel";
+import { PropsWithChildren } from "react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -18,13 +19,9 @@ export const metadata: Metadata = {
   description: "Search places and view activity details.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ReactQueryProvider>
           {children}
