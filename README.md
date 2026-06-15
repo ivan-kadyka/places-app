@@ -2,7 +2,7 @@
 
 A full-stack places recommendation application built as a **[Turborepo](https://turbo.build/repo) monorepo** using **TypeScript**.
 
-[See Implementation Plan](docs/implementation-plan.md)
+[👉 See Implementation Plan](docs/implementation-plan.md)
 
 The project consists of:
 
