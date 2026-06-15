@@ -42,20 +42,23 @@ export class PlaceService implements IPlaceService {
 
   async getDetails(params: IPlaceDetailsParams): Promise<IPlaceDetails> {
 
+    // 1. Execute search flow
     const placeName = params.name
-
+    
     const places = await this.search({ name: placeName, limit: 1 });
     
+
+    // 2. If places don't exist - throw error
     if (places.length === 0) {
       throw new NotFoundException(`Place ${placeName} not found`);
     }
-
+    // 3. Get weather forecast for current place and date range
     const place = places[0]
-
     const dateRange = getDateRangeOrNextWeek(params.dateRange)
-
+    
     const weatherForecast = await this.weatherService.getWeatherByPlace(place, dateRange);
 
+    // 4. Get place activities accordingly weather forecast
     const activities = await this.activityScoringService.getActivities(place, weatherForecast);
 
     return {
