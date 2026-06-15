@@ -1,5 +1,5 @@
 {
-  "name": "weather-app",
+  "name": "places-app",
   "private": true,
   "scripts": {
     "build": "turbo run build",

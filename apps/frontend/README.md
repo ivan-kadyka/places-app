@@ -1,6 +1,6 @@
-# Weather App Frontend
+# Places App Frontend
 
-Next.js frontend for the weather app. It is part of the pnpm/Turborepo workspace and runs on port 3000.
+Next.js frontend for the places app.
 
 ## From The Root README
 
@@ -8,16 +8,8 @@ Back to the [root README](../../README.md).
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 20+
 - pnpm 9
-
-## Run With Docker Compose
-
-From the repository root, start the full stack:
-
-```bash
-docker compose -f 'docker-compose.yml' up -d --build
-```
 
 Open the frontend at `http://localhost:3000`.
 
@@ -32,41 +24,17 @@ pnpm install
 Start the frontend in development mode:
 
 ```bash
-pnpm --filter frontend dev
+pnpm dev
 ```
 
 Build:
 
 ```bash
-pnpm --filter frontend build
+pnpm build
 ```
 
 Start the production build:
 
 ```bash
-pnpm --filter frontend start
+pnpm start
 ```
-
-Run linting:
-
-```bash
-pnpm --filter frontend lint
-```
-
-Run type checks:
-
-```bash
-pnpm --filter frontend check-types
-```
-
-## Workspace Commands
-
-You can also run the common commands from the repository root:
-
-```bash
-pnpm dev
-pnpm build
-pnpm test
-```
-
-Note: the frontend package does not currently define its own `test` script, so `pnpm test` runs tests for workspace packages that provide one.

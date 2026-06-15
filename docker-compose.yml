@@ -1,15 +1,15 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: weather-app-postgres
+    container_name: places-app-postgres
     environment:
-      POSTGRES_USER: weather
-      POSTGRES_PASSWORD: weather
-      POSTGRES_DB: weather_app
+      POSTGRES_USER: places
+      POSTGRES_PASSWORD: places
+      POSTGRES_DB: places_app
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U weather"]
+      test: ["CMD-SHELL", "pg_isready -U places"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -18,9 +18,9 @@ services:
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
-    container_name: weather-app-backend
+    container_name: places-app-backend
     environment:
-      DATABASE_URL: postgresql://weather:weather@postgres:5432/weather_app?schema=public
+      DATABASE_URL: postgresql://places:places@postgres:5432/places_app?schema=public
       PORT: 8000
       WEATHER_CACHE_TTL_HOURS: 6
     ports:
@@ -33,9 +33,9 @@ services:
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
-    container_name: weather-app-prisma-studio
+    container_name: places-app-prisma-studio
     environment:
-      DATABASE_URL: postgresql://weather:weather@postgres:5432/weather_app?schema=public
+      DATABASE_URL: postgresql://places:places@postgres:5432/places_app?schema=public
     ports:
       - "5555:5555"
     depends_on:
@@ -47,7 +47,7 @@ services:
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
-    container_name: weather-app-frontend
+    container_name: places-app-frontend
     ports:
       - "3000:3000"
     depends_on:

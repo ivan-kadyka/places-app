@@ -1,6 +1,15 @@
-# Weather App
+# Places App
 
-Monorepo for a weather recommendation app. The project contains a NestJS backend, a Next.js frontend, and shared workspace packages managed with pnpm and Turborepo.
+A full-stack places recommendation application built as a **[Turborepo](https://turbo.build/repo) monorepo** using **TypeScript**.
+
+The project consists of:
+
+- **Backend:** [NestJS](https://nestjs.com/) REST API and GraphQL server running on [Node.js](https://nodejs.org/)
+- **Frontend:** [Next.js](https://nextjs.org/) application
+- **Database:** [PostgreSQL](https://www.postgresql.org/) with [Prisma ORM](https://www.prisma.io/)
+- **Architecture:** Shared packages and applications managed with [Turborepo](https://turbo.build/repo)
+
+The application analyzes places and weather forecasts and provides activity recommendations based on upcoming conditions.
 
 ## Apps
 
@@ -9,7 +18,7 @@ Monorepo for a weather recommendation app. The project contains a NestJS backend
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 20+
 - pnpm 9
 - Docker and Docker Compose, if running the full stack in containers
 
@@ -19,27 +28,15 @@ Install dependencies from the repository root:
 pnpm install
 ```
 
-## Run With Docker Compose
+## Environment Setup
 
-From the repository root:
-
-```bash
-docker compose -f 'docker-compose.yml' up -d --build
-```
-
-Services:
-
-- Frontend: `http://localhost:3000`
-- Backend API: `http://localhost:8000`
-- Swagger docs: `http://localhost:8000/api`
-- GraphQL playground: `http://localhost:8000/graphql`
-- Prisma Studio: `http://localhost:5555`
-
-Stop the stack:
+Create a `.env` file for the backend application from the example file:
 
 ```bash
-docker compose -f 'docker-compose.yml' down
+cp apps/backend/.env.example apps/backend/.env
 ```
+
+Update `apps/backend/.env` and set the `DATABASE_URL` variable to your PostgreSQL connection string.
 
 ## Run Locally
 
@@ -63,24 +60,24 @@ Run tests:
 pnpm test
 ```
 
-## Useful Commands
+## Run With Docker Compose
 
-Run one app only:
+From the repository root:
 
 ```bash
-pnpm --filter backend dev
-pnpm --filter frontend dev
+docker compose -f 'docker-compose.yml' up -d --build
 ```
 
-Build one app only:
+Services:
+
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8000`
+- Swagger docs: `http://localhost:8000/api`
+- GraphQL playground: `http://localhost:8000/graphql`
+- Prisma Studio: `http://localhost:5555`
+
+Stop the stack:
 
 ```bash
-pnpm --filter backend build
-pnpm --filter frontend build
-```
-
-Run backend tests only:
-
-```bash
-pnpm --filter backend test
+docker compose -f 'docker-compose.yml' down
 ```

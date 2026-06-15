@@ -8,97 +8,55 @@ Back to the [root README](../../README.md).
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 20+
 - pnpm 9
-- PostgreSQL, or the Docker Compose stack from the repository root
 
-## Environment
-
-Create a local environment file:
-
-```bash
-cp apps/backend/.env.example apps/backend/.env
-```
-
-Default local values:
-
-```bash
-DATABASE_URL="postgresql://weather:weather@localhost:5432/weather_app?schema=public"
-PORT=8000
-WEATHER_CACHE_TTL_HOURS=6
-```
-
-## Run With Docker Compose
-
-From the repository root, start the full stack:
-
-```bash
-docker compose -f 'docker-compose.yml' up -d --build
-```
-
-The backend runs at `http://localhost:8000`.
-
-Useful URLs:
-
-- Swagger docs: `http://localhost:8000/api`
-- GraphQL playground: `http://localhost:8000/graphql`
-- Prisma Studio: `http://localhost:5555`
-
-## Run Locally
-
-From the repository root, install dependencies:
+Install dependencies from the repository root:
 
 ```bash
 pnpm install
 ```
 
-Start PostgreSQL first. You can use the root Docker Compose stack, or provide your own PostgreSQL instance that matches `DATABASE_URL`.
+## Environment Setup
 
-Generate Prisma client and run migrations:
+Create a `.env` file for the backend application from the example file:
 
 ```bash
-pnpm --filter backend db:generate
-pnpm --filter backend db:migrate
+cp .env.example .env
 ```
 
-Run the backend in development mode:
+Update `.env` and set the `DATABASE_URL` variable to your PostgreSQL connection string.
+
+## Run Locally
+
+Run commands from the repository root.
+
+Build all apps and packages:
 
 ```bash
-pnpm --filter backend dev
+pnpm build
 ```
 
-Build:
+Run all apps in development mode:
 
 ```bash
-pnpm --filter backend build
+pnpm dev
 ```
 
-Test:
+Run tests:
 
 ```bash
-pnpm --filter backend test
+pnpm test
 ```
 
 ## API
-
-REST endpoints:
-
-- `GET /place/search?name={name}&count={count}`
-- `GET /place/details?place={name}`
 
 GraphQL queries:
 
 - `searchPlaces(name: String!, count: Int)`
 - `getPlaceDetails(name: String!)`
 
-## Scripts
+REST endpoints:
 
-| Command | Description |
-| --- | --- |
-| `pnpm --filter backend dev` | Start NestJS in watch mode |
-| `pnpm --filter backend build` | Generate Prisma artifacts, run deployed migrations, and compile |
-| `pnpm --filter backend test` | Run unit tests |
-| `pnpm --filter backend test:e2e` | Run e2e tests |
-| `pnpm --filter backend db:generate` | Generate Prisma client |
-| `pnpm --filter backend db:migrate` | Run Prisma migrations locally |
-| `pnpm --filter backend db:push` | Push schema changes without a migration |
+- `GET /place/search?name={name}&count={count}`
+- `GET /place/details?place={name}`
