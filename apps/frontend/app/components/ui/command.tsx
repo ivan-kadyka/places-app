@@ -6,7 +6,6 @@ import {
   type InputHTMLAttributes,
   type ReactNode,
 } from "react";
-import styles from "./ui.module.css";
 
 export function Command({
   className,
@@ -14,7 +13,12 @@ export function Command({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={[styles.command, className].filter(Boolean).join(" ")}
+      className={[
+        "w-full overflow-hidden rounded-lg border border-input bg-card text-foreground transition-[border-color,box-shadow] focus-within:border-ring focus-within:shadow-[0_0_0_3px_rgba(24,118,105,0.16)]",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       {...props}
     />
   );
@@ -26,7 +30,12 @@ export function CommandInput({
 }: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={[styles.commandInput, className].filter(Boolean).join(" ")}
+      className={[
+        "h-[46px] w-full border-0 border-b border-border bg-transparent px-3.5 text-foreground outline-none placeholder:text-muted-foreground",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       {...props}
     />
   );
@@ -38,7 +47,9 @@ export function CommandList({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={[styles.commandList, className].filter(Boolean).join(" ")}
+      className={["h-60 overflow-y-auto p-1.5", className]
+        .filter(Boolean)
+        .join(" ")}
       role="listbox"
       {...props}
     />
@@ -51,7 +62,12 @@ export function CommandEmpty({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={[styles.commandEmpty, className].filter(Boolean).join(" ")}
+      className={[
+        "p-3 text-sm leading-relaxed text-muted-foreground",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       {...props}
     />
   );
@@ -67,11 +83,13 @@ export function CommandGroup({
 }) {
   return (
     <div
-      className={[styles.commandGroup, className].filter(Boolean).join(" ")}
+      className={["grid gap-1", className].filter(Boolean).join(" ")}
       {...props}
     >
       {heading ? (
-        <div className={styles.commandGroupHeading}>{heading}</div>
+        <div className="px-2 pb-1 pt-[7px] text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">
+          {heading}
+        </div>
       ) : null}
       {children}
     </div>
@@ -85,7 +103,12 @@ export function CommandItem({
 }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className={[styles.commandItem, className].filter(Boolean).join(" ")}
+      className={[
+        "grid w-full cursor-pointer gap-[3px] rounded-[5px] border-0 bg-transparent px-2.5 py-[9px] text-left text-sm leading-tight text-foreground outline-none hover:bg-accent focus-visible:bg-accent disabled:cursor-not-allowed disabled:opacity-55 aria-selected:bg-accent",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       role="option"
       type="button"
       {...props}
@@ -101,7 +124,9 @@ export function CommandSeparator({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={[styles.commandSeparator, className].filter(Boolean).join(" ")}
+      className={["-mx-1.5 my-1.5 h-px bg-border", className]
+        .filter(Boolean)
+        .join(" ")}
       {...props}
     />
   );
@@ -113,7 +138,9 @@ export function CommandShortcut({
 }: HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={[styles.commandShortcut, className].filter(Boolean).join(" ")}
+      className={["ml-auto text-xs text-muted-foreground", className]
+        .filter(Boolean)
+        .join(" ")}
       {...props}
     />
   );

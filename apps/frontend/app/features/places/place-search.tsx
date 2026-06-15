@@ -23,7 +23,6 @@ import {
   type Place,
   type PlaceDetails,
 } from "../../lib/graphql";
-import styles from "./place-search.module.css";
 
 function useDebouncedValue(value: string, delayMs: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -67,18 +66,23 @@ function DetailsPanel({ details }: { details: PlaceDetails }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className={styles.activityGrid}>
+        <div className="grid gap-2.5">
           {details.activities.map((activity) => (
-            <div className={styles.activity} key={activity.type}>
+            <div
+              className="flex items-center justify-between gap-4 rounded-lg border border-border bg-[#fbfefd] p-3.5"
+              key={activity.type}
+            >
               <div>
-                <div className={styles.activityName}>
+                <div className="text-[15px] font-semibold text-foreground">
                   {formatActivityType(activity.type)}
                 </div>
-                <div className={styles.activityLevel}>
+                <div className="mt-[3px] text-[13px] text-muted-foreground">
                   {activity.score.level}
                 </div>
               </div>
-              <div className={styles.score}>{activity.score.percentage}%</div>
+              <div className="whitespace-nowrap text-[22px] font-bold leading-none text-primary">
+                {activity.score.percentage}%
+              </div>
             </div>
           ))}
         </div>
@@ -138,16 +142,18 @@ export function PlaceSearch() {
   }, [debouncedSearchText]);
 
   return (
-    <main className={styles.page}>
-      <section className={styles.shell}>
-        <div className={styles.heading}>
-          <h1>Find place activities</h1>
+    <main className="min-h-svh bg-[linear-gradient(180deg,rgba(241,248,247,0.94),rgba(248,250,252,1))] px-3.5 py-8 text-foreground sm:px-5 sm:py-14">
+      <section className="mx-auto grid w-full max-w-[840px] gap-[18px]">
+        <div className="grid gap-2.5 px-0 pb-3 pt-2">
+          <h1 className="max-w-[720px] text-[clamp(32px,5vw,56px)] font-bold leading-[1.04] text-[#10201e]">
+            Find place activities
+          </h1>
         </div>
 
         <Card>
           <CardContent>
-            <div className={styles.form}>
-              <div className={styles.field}>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
                 <Command>
                   <CommandInput
                     autoComplete="off"
@@ -169,7 +175,7 @@ export function PlaceSearch() {
                             onClick={() => setSelectedPlace(place)}
                           >
                             <span>{place.name}</span>
-                            <span className={styles.resultMeta}>
+                            <span className="text-xs text-muted-foreground">
                               {place.countryCode} ·{" "}
                               {formatNumber(place.coordinate.latitude)},{" "}
                               {formatNumber(place.coordinate.longitude)}
@@ -188,7 +194,9 @@ export function PlaceSearch() {
         {detailsQuery.isFetching ? (
           <Card>
             <CardContent>
-              <p className={styles.helper}>Loading place details...</p>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Loading place details...
+              </p>
             </CardContent>
           </Card>
         ) : null}
@@ -196,7 +204,9 @@ export function PlaceSearch() {
         {detailsQuery.isError ? (
           <Card>
             <CardContent>
-              <p className={styles.error}>{detailsQuery.error.message}</p>
+              <p className="text-sm leading-relaxed text-error">
+                {detailsQuery.error.message}
+              </p>
             </CardContent>
           </Card>
         ) : null}
