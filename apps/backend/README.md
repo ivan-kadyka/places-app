@@ -49,6 +49,101 @@ Run tests:
 pnpm test
 ```
 
+```mermaid
+flowchart LR
+    PlaceService["PlaceService"]
+
+    PlaceService -->|"injects"| IWeatherForecastService
+    PlaceService -->|"injects"| IActivityScoreService
+    PlaceService -->|"injects"| IDBContext
+    PlaceService -->|"injects"| IPlaceSearchService
+
+    IWeatherForecastService --> WeatherForecastService
+    IActivityScoreService --> ActivityScoringService
+    IDBContext --> PrismaDBContext
+    IPlaceSearchService --> OpenMeteoPlaceSearchService
+```
+
+
+```typescript
+/**
+ * Provides place search and place details operations.
+ */
+export abstract class IPlaceService {
+  /**
+   * Searches for places matching the supplied criteria.
+   *
+   * @param params Search parameters.
+   * @returns A collection of matching places.
+   */
+  abstract search(params: ISearchPlacesParams): Promise<IPlace[]>;
+
+  /**
+   * Retrieves detailed information for a specific place.
+   *
+   * @param params Place lookup parameters.
+   * @returns Detailed information about the requested place.
+   */
+  abstract getDetails(params: IPlaceDetailsParams): Promise<IPlaceDetails>;
+}
+```
+
+
+```typescript
+/**
+ * Detailed information about a place for a specific date range.
+ */
+export interface IPlaceDetails {
+  /**
+   * Unique identifier of the place.
+   */
+  id: PlaceId;
+
+  /**
+   * Display name of the place.
+   */
+  name: string;
+
+  /**
+   * Date range used to calculate the returned details.
+   */
+  dateRange: IDateRange;
+
+  /**
+   * Activities available for the place along with their recommendation scores.
+   */
+  activities: IActivity[];
+}
+```
+
+```typescript
+/**
+ * Represents an activity and its recommendation score for a place.
+ */
+export interface IActivity {
+  /**
+   * The activity category.
+   */
+  type: ActivityType
+
+  /**
+   * Recommendation score for the activity.
+   */
+  score: {
+    /**
+     * Recommendation level derived from the calculated score.
+     */
+    level: RecommendationLevel
+
+    /**
+     * Recommendation score expressed as a percentage from 0 to 100.
+     */
+    percentage: number
+  }
+}
+```
+
+
 ## API
 
 GraphQL queries:
