@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useId, useMemo, useState } from "react";
-import { Button } from "../../components/ui/button";
 import {
   Card,
   CardContent,
@@ -110,7 +109,7 @@ export function PlaceSearch() {
 
   const helperText = useMemo(() => {
     if (searchText.trim().length < 2) {
-      return "Type at least 2 characters to search.";
+      return "";
     }
 
     if (placesQuery.isFetching) {
@@ -142,23 +141,19 @@ export function PlaceSearch() {
     <main className={styles.page}>
       <section className={styles.shell}>
         <div className={styles.heading}>
-          <p className={styles.eyebrow}>Place search</p>
-          <h1>Find a place and review its activity forecast.</h1>
+          <h1>Find place activities</h1>
         </div>
 
         <Card>
           <CardContent>
             <div className={styles.form}>
               <div className={styles.field}>
-                <label className={styles.fieldLabel} htmlFor={searchInputId}>
-                  Search
-                </label>
                 <Command>
                   <CommandInput
                     autoComplete="off"
                     id={searchInputId}
                     onChange={(event) => setSearchText(event.target.value)}
-                    placeholder="Warsaw, Berlin, Tokyo..."
+                    placeholder="Search a place..."
                     value={searchText}
                   />
                   <CommandList aria-label="Place results">
@@ -186,17 +181,6 @@ export function PlaceSearch() {
                   </CommandList>
                 </Command>
               </div>
-
-              <div className={styles.formFooter}>
-                <p className={styles.helper}>{helperText}</p>
-                <Button
-                  disabled={!selectedPlace || detailsQuery.isFetching}
-                  onClick={() => void detailsQuery.refetch()}
-                  type="button"
-                >
-                  Refresh details
-                </Button>
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -217,7 +201,9 @@ export function PlaceSearch() {
           </Card>
         ) : null}
 
-        {detailsQuery.data ? <DetailsPanel details={detailsQuery.data} /> : null}
+        {detailsQuery.data ? (
+          <DetailsPanel details={detailsQuery.data} />
+        ) : null}
       </section>
     </main>
   );
