@@ -49,6 +49,20 @@ Run tests:
 pnpm test
 ```
 
+
+#### Modules structure
+```mermaid
+classDiagram
+    class PlaceModule
+    class WeatherModule
+    class ActivitiesModule
+
+    PlaceModule --> WeatherModule : depends on
+    PlaceModule --> ActivitiesModule : depends on
+```
+
+#### PlaceService structure
+
 ```mermaid
 flowchart LR
     PlaceService["PlaceService"]
@@ -64,7 +78,67 @@ flowchart LR
     IPlaceSearchService --> OpenMeteoPlaceSearchService
 ```
 
+##### PlaceService flows
 
+```mermaid
+---
+title: 'Place Search Flow:'
+---
+stateDiagram-v2
+    [*] --> SearchDatabase
+
+    SearchDatabase : Search places in database
+
+    SearchDatabase --> Return_Places : places found
+    SearchDatabase --> SearchExternal : no places found
+
+    SearchExternal : Search via Open-Meteo
+
+    SearchExternal --> Return_Empty : no places found
+    SearchExternal --> SavePlaces : places found
+
+    SavePlaces : Save places to database
+    SavePlaces --> Return_Saved_Places
+    Return_Saved_Places : Return saved places 
+
+    Return_Places: Return places
+    Return_Empty: Return empty
+
+    Return_Places --> [*]
+    Return_Empty --> [*]
+    Return_Saved_Places --> [*]
+```
+
+
+
+```mermaid
+---
+title: 'Get Place Details(Activities) Flow:'
+---
+stateDiagram-v2
+    [*] --> SearchPlace
+
+    SearchPlace : Execute search flow
+
+    SearchPlace --> PlaceNotFound : no places found
+    SearchPlace --> GetWeatherForecast : place found
+
+    PlaceNotFound : Throw NotFoundException
+    PlaceNotFound --> [*]
+
+    GetWeatherForecast : Get weather forecast
+
+    GetWeatherForecast --> CalculateActivities : weather forecast
+
+    CalculateActivities : Calculate activities
+
+    CalculateActivities --> ReturnPlaceDetails
+
+    ReturnPlaceDetails : Return place with activities
+    ReturnPlaceDetails --> [*]
+```
+
+#### API Service
 ```typescript
 /**
  * Provides place search and place details operations.

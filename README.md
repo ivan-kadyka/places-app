@@ -13,8 +13,8 @@ The application analyzes places and weather forecasts and provides activity reco
 
 ## Apps
 
-- [Backend](apps/backend/README.md) - NestJS API, Prisma, PostgreSQL, weather data, place search, and activity scoring.
-- [Frontend](apps/frontend/README.md) - Next.js UI served on port 3000.
+- [Backend.README](apps/backend/README.md) - NestJS API, Prisma, PostgreSQL, weather data, place search, and activity scoring.
+- [Frontend.README](apps/frontend/README.md) - Next.js UI served on port 3000.
 
 ## Requirements
 
