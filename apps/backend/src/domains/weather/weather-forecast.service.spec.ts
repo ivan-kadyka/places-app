@@ -5,6 +5,7 @@ import { OpenMeteoService } from './open-meteo/open-meteo.service';
 import { ConfigService } from '@nestjs/config';
 import { IPlace } from '../place/models/place';
 import { WeatherDaySnapshotEntity } from 'src/database/entities/weather-day-snapshot.entity';
+import { IWeatherDaySnapshotRepository } from 'src/database/repositories/weather-day-snapshot.repository.interface';
 
 const mockPlace: IPlace = {
   id: '1',
@@ -16,6 +17,8 @@ const mockPlace: IPlace = {
 
 const now = new Date();
 const snapshotDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+const forecastDate = snapshotDate.toISOString().split('T')[0];
+const parsedForecastDate = new Date(forecastDate);
 const mockSnapshot: WeatherDaySnapshotEntity = {
   id: '1',
   providerType: 'open-meteo',
@@ -39,23 +42,37 @@ const mockSnapshot: WeatherDaySnapshotEntity = {
 
 describe('WeatherForecastService', () => {
   let service: WeatherForecastService;
-  let dbContext: jest.Mocked<IDBContext>;
-  let openMeteoService: jest.Mocked<OpenMeteoService>;
-  let configService: jest.Mocked<ConfigService>;
+  let weatherDaySnapshotsRepository: jest.Mocked<IWeatherDaySnapshotRepository>;
+  let searchSnapshotsMock: jest.MockedFunction<IWeatherDaySnapshotRepository['search']>;
+  let deleteSnapshotsMock: jest.MockedFunction<IWeatherDaySnapshotRepository['delete']>;
+  let createManySnapshotsMock: jest.MockedFunction<IWeatherDaySnapshotRepository['createMany']>;
+  let fetchForecastMock: jest.MockedFunction<OpenMeteoService['fetchForecast']>;
 
   beforeEach(async () => {
+    searchSnapshotsMock = jest.fn();
+    deleteSnapshotsMock = jest.fn();
+    createManySnapshotsMock = jest.fn();
+    fetchForecastMock = jest.fn();
+
+    weatherDaySnapshotsRepository = {
+      search: searchSnapshotsMock,
+      delete: deleteSnapshotsMock,
+      createMany: createManySnapshotsMock,
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WeatherForecastService,
         {
           provide: IDBContext,
           useValue: {
-            weatherDaySnapshots: { search: jest.fn(), delete: jest.fn(), createMany: jest.fn() },
+            weatherDaySnapshots: weatherDaySnapshotsRepository,
+            runInTransaction: jest.fn(),
           },
         },
         {
           provide: OpenMeteoService,
-          useValue: { fetchForecast: jest.fn() },
+          useValue: { fetchForecast: fetchForecastMock },
         },
         {
           provide: ConfigService,
@@ -65,38 +82,51 @@ describe('WeatherForecastService', () => {
     }).compile();
 
     service = module.get<WeatherForecastService>(WeatherForecastService);
-    dbContext = module.get(IDBContext);
-    openMeteoService = module.get(OpenMeteoService);
-    configService = module.get(ConfigService);
   });
 
   describe('getWeatherByPlace', () => {
     it('should return cached weather when valid snapshots exist', async () => {
-      const dateRange = { 
-        from: snapshotDate, 
-        to: new Date(snapshotDate.getTime() + 24 * 60 * 60 * 1000) 
+      const dateRange = {
+        from: snapshotDate,
+        to: new Date(snapshotDate.getTime() + 24 * 60 * 60 * 1000),
       };
-      dbContext.weatherDaySnapshots.search.mockResolvedValue([mockSnapshot]);
+      searchSnapshotsMock.mockResolvedValue([mockSnapshot]);
 
       const result = await service.getWeatherByPlace(mockPlace, dateRange);
 
       expect(result.placeId).toBe(mockPlace.id);
       expect(result.days).toHaveLength(1);
+      expect(result.days[0]).toEqual({
+        date: snapshotDate,
+        temperatureMax: 20,
+        temperatureMin: 10,
+        precipitationSum: 0,
+        rainSum: 0,
+        snowfallSum: 0,
+        windSpeedMax: 5,
+        windGustsMax: 10,
+        sunshineDuration: 3600,
+        weatherCode: 0,
+        precipitationProbabilityMax: 0,
+      });
+      expect(fetchForecastMock).not.toHaveBeenCalled();
+      expect(deleteSnapshotsMock).not.toHaveBeenCalled();
+      expect(createManySnapshotsMock).not.toHaveBeenCalled();
     });
 
     it('should refresh weather when no valid cached snapshots exist', async () => {
-      const dateRange = { 
-        from: snapshotDate, 
-        to: new Date(snapshotDate.getTime() + 24 * 60 * 60 * 1000) 
+      const dateRange = {
+        from: snapshotDate,
+        to: new Date(snapshotDate.getTime() + 24 * 60 * 60 * 1000),
       };
-      dbContext.weatherDaySnapshots.search.mockResolvedValue([]);
-      openMeteoService.fetchForecast.mockResolvedValue({
+      searchSnapshotsMock.mockResolvedValue([]);
+      fetchForecastMock.mockResolvedValue({
         latitude: 52.52,
         longitude: 13.41,
         elevation: 34,
         timezone: 'Europe/Berlin',
         daily: {
-          time: [snapshotDate.toISOString().split('T')[0]],
+          time: [forecastDate],
           temperature_2m_max: [20],
           temperature_2m_min: [10],
           precipitation_sum: [0],
@@ -113,7 +143,65 @@ describe('WeatherForecastService', () => {
       const result = await service.getWeatherByPlace(mockPlace, dateRange);
 
       expect(result.placeId).toBe(mockPlace.id);
-      expect(openMeteoService.fetchForecast).toHaveBeenCalled();
+      expect(result.days).toHaveLength(1);
+      expect(fetchForecastMock).toHaveBeenCalledWith(52.52, 13.41, 'Europe/Berlin', 1);
+      expect(deleteSnapshotsMock).toHaveBeenCalledWith(mockPlace.id, dateRange);
+      expect(createManySnapshotsMock).toHaveBeenCalledWith([
+        {
+          providerType: 'open-meteo',
+          date: parsedForecastDate,
+          placeId: mockPlace.id,
+          snapshot: {
+            temperatureMax: 20,
+            temperatureMin: 10,
+            precipitationSum: 0,
+            rainSum: 0,
+            snowfallSum: 0,
+            weatherCode: 0,
+            windSpeedMax: 5,
+            windGustsMax: 10,
+            sunshineDuration: 3600,
+            precipitationProbabilityMax: 0,
+          },
+        },
+      ]);
+    });
+
+    it('should refresh weather when cached snapshots are expired', async () => {
+      const dateRange = {
+        from: snapshotDate,
+        to: new Date(snapshotDate.getTime() + 24 * 60 * 60 * 1000),
+      };
+      const expiredSnapshot = {
+        ...mockSnapshot,
+        updatedAt: new Date(Date.now() - 7 * 60 * 60 * 1000),
+      };
+
+      searchSnapshotsMock.mockResolvedValue([expiredSnapshot]);
+      fetchForecastMock.mockResolvedValue({
+        latitude: 52.52,
+        longitude: 13.41,
+        elevation: 34,
+        timezone: 'Europe/Berlin',
+        daily: {
+          time: [forecastDate],
+          temperature_2m_max: [20],
+          temperature_2m_min: [10],
+          precipitation_sum: [0],
+          rain_sum: [0],
+          snowfall_sum: [0],
+          weather_code: [0],
+          wind_speed_10m_max: [5],
+          wind_gusts_10m_max: [10],
+          sunshine_duration: [3600],
+          precipitation_probability_max: [0],
+        },
+      });
+
+      await service.getWeatherByPlace(mockPlace, dateRange);
+
+      expect(fetchForecastMock).toHaveBeenCalledWith(52.52, 13.41, 'Europe/Berlin', 1);
+      expect(deleteSnapshotsMock).toHaveBeenCalledWith(mockPlace.id, dateRange);
     });
   });
 });
