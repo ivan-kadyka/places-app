@@ -1,100 +1,104 @@
-# Weather Rankings API
+# Weather App Backend
 
-NestJS backend that ranks the next 7 days for outdoor activities based on [Open-Meteo](https://open-meteo.com/) forecasts. Weather data is persisted in PostgreSQL and refreshed on a TTL schedule instead of calling the API on every request.
+NestJS API for place search, weather forecasts, and outdoor activity scoring. It uses PostgreSQL through Prisma and fetches weather/place data from Open-Meteo.
 
-## Activities
+## From The Root README
 
-| Activity | Scoring highlights |
-| --- | --- |
-| **Skiing** | Cold temps, snowfall, snow weather codes |
-| **Surfing** | Moderate wind (proxy for swell), mild temps, dry conditions |
-| **Outdoor sightseeing** | Clear skies, mild temps, low precipitation, sunshine |
-| **Indoor sightseeing** | Rain, storms, extreme temps (inverse of ideal outdoor days) |
+Back to the [root README](../../README.md).
 
-Each activity returns all 7 forecast days sorted by date, with a **rank** (1 = best day) and **score** (0–100).
+## Requirements
 
-## Setup
+- Node.js 18+
+- pnpm 9
+- PostgreSQL, or the Docker Compose stack from the repository root
+
+## Environment
+
+Create a local environment file:
 
 ```bash
-# From apps/backend
-cp .env.example .env
-docker compose up -d
-pnpm db:generate
-pnpm db:migrate
-pnpm dev
+cp apps/backend/.env.example apps/backend/.env
 ```
 
-The API listens on `http://localhost:8000`.
+Default local values:
+
+```bash
+DATABASE_URL="postgresql://weather:weather@localhost:5432/weather_app?schema=public"
+PORT=8000
+WEATHER_CACHE_TTL_HOURS=6
+```
+
+## Run With Docker Compose
+
+From the repository root, start the full stack:
+
+```bash
+docker compose -f 'docker-compose.yml' up -d --build
+```
+
+The backend runs at `http://localhost:8000`.
+
+Useful URLs:
+
+- Swagger docs: `http://localhost:8000/api`
+- GraphQL playground: `http://localhost:8000/graphql`
+- Prisma Studio: `http://localhost:5555`
+
+## Run Locally
+
+From the repository root, install dependencies:
+
+```bash
+pnpm install
+```
+
+Start PostgreSQL first. You can use the root Docker Compose stack, or provide your own PostgreSQL instance that matches `DATABASE_URL`.
+
+Generate Prisma client and run migrations:
+
+```bash
+pnpm --filter backend db:generate
+pnpm --filter backend db:migrate
+```
+
+Run the backend in development mode:
+
+```bash
+pnpm --filter backend dev
+```
+
+Build:
+
+```bash
+pnpm --filter backend build
+```
+
+Test:
+
+```bash
+pnpm --filter backend test
+```
 
 ## API
 
-### `GET /rankings?city={name}&country={code}`
+REST endpoints:
 
-Returns activity rankings for the next 7 days.
+- `GET /place/search?name={name}&count={count}`
+- `GET /place/details?place={name}`
 
-**Query parameters**
+GraphQL queries:
 
-| Param | Required | Description |
-| --- | --- | --- |
-| `city` | yes | City or town name (min 2 chars) |
-| `country` | no | ISO 3166-1 alpha-2 country code to disambiguate (e.g. `US`, `FR`) |
-
-**Example**
-
-```bash
-curl "http://localhost:8000/rankings?city=Chamonix&country=FR"
-curl "http://localhost:8000/rankings?city=Biarritz&country=FR"
-curl "http://localhost:8000/rankings?city=Paris&country=FR"
-```
-
-**Sample response**
-
-```json
-{
-  "location": {
-    "name": "Paris",
-    "country": "France",
-    "countryCode": "FR",
-    "latitude": 48.85341,
-    "longitude": 2.3488,
-    "timezone": "Europe/Paris"
-  },
-  "forecastFetchedAt": "2026-06-13T10:00:00.000Z",
-  "forecastExpiresAt": "2026-06-13T16:00:00.000Z",
-  "cacheHit": false,
-  "rankings": [
-    {
-      "activity": "skiing",
-      "days": [
-        { "date": "2026-06-13", "rank": 3, "score": 12.5, "weatherCode": 3, "temperatureMax": 22, "temperatureMin": 14, "precipitationSum": 0 }
-      ]
-    }
-  ]
-}
-```
-
-## Data model & caching
-
-```
-Location ──< WeatherSnapshot
-```
-
-- **Location** — geocoded city/town from Open-Meteo Geocoding API (upserted on first request).
-- **WeatherSnapshot** — 7-day daily forecast JSON with `fetchedAt` and `expiresAt`.
-
-**Refresh strategy**
-
-1. **On read** — if a valid (non-expired) snapshot exists, serve from DB (`cacheHit: true`). Otherwise fetch from Open-Meteo and store a new snapshot.
-2. **Background cron** — every 6 hours, refresh locations whose cache has expired.
-
-Configure TTL via `WEATHER_CACHE_TTL_HOURS` (default: 6).
+- `searchPlaces(name: String!, count: Int)`
+- `getPlaceDetails(name: String!)`
 
 ## Scripts
 
 | Command | Description |
 | --- | --- |
-| `pnpm dev` | Start in watch mode |
-| `pnpm build` | Compile |
-| `pnpm test` | Unit tests |
-| `pnpm db:generate` | Generate Prisma client |
-| `pnpm db:migrate` | Run migrations |
+| `pnpm --filter backend dev` | Start NestJS in watch mode |
+| `pnpm --filter backend build` | Generate Prisma artifacts, run deployed migrations, and compile |
+| `pnpm --filter backend test` | Run unit tests |
+| `pnpm --filter backend test:e2e` | Run e2e tests |
+| `pnpm --filter backend db:generate` | Generate Prisma client |
+| `pnpm --filter backend db:migrate` | Run Prisma migrations locally |
+| `pnpm --filter backend db:push` | Push schema changes without a migration |
