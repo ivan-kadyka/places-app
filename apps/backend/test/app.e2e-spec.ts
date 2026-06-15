@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication, NotFoundException, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
@@ -189,5 +189,47 @@ describe('App e2e', () => {
       ],
     });
     expect(getDetailsMock).toHaveBeenCalledWith({ name: 'Berlin' });
+  });
+
+  it('/graphql should return backend exception details when place details are not found', async () => {
+    getDetailsMock.mockRejectedValueOnce(new NotFoundException('Place Atlantis not found'));
+
+    const response = await request(httpServer)
+      .post('/graphql')
+      .send({
+        query: `
+          query PlaceDetails($name: String!) {
+            getPlaceDetails(name: $name) {
+              id
+              name
+            }
+          }
+        `,
+        variables: { name: 'Atlantis' },
+      })
+      .expect(200);
+
+    const body = response.body as GraphQLResponse<{ getPlaceDetails: null }>;
+
+    expect(body.data).toBeNull();
+    expect(body.errors).toHaveLength(1);
+    expect(body.errors?.[0]).toMatchObject({
+      message: 'Place Atlantis not found',
+      extensions: {
+        code: 'NOT_FOUND',
+        statusCode: 404,
+        response: {
+          message: 'Place Atlantis not found',
+          error: 'Not Found',
+          statusCode: 404,
+        },
+      },
+    });
+    expect(body.errors?.[0]).not.toMatchObject({
+      extensions: {
+        stacktrace: expect.any(Array),
+      },
+    });
+    expect(getDetailsMock).toHaveBeenCalledWith({ name: 'Atlantis' });
   });
 });
