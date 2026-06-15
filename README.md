@@ -1,159 +1,86 @@
-# Turborepo starter
+# Weather App
 
-This Turborepo starter is maintained by the Turborepo core team.
+Monorepo for a weather recommendation app. The project contains a NestJS backend, a Next.js frontend, and shared workspace packages managed with pnpm and Turborepo.
 
-## Using this example
+## Apps
 
-Run the following command:
+- [Backend](apps/backend/README.md) - NestJS API, Prisma, PostgreSQL, weather data, place search, and activity scoring.
+- [Frontend](apps/frontend/README.md) - Next.js UI served on port 3000.
 
-```sh
-npx create-turbo@latest
+## Requirements
+
+- Node.js 18+
+- pnpm 9
+- Docker and Docker Compose, if running the full stack in containers
+
+Install dependencies from the repository root:
+
+```bash
+pnpm install
 ```
 
-## What's inside?
+## Run With Docker Compose
 
-This Turborepo includes the following packages/apps:
+From the repository root:
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```bash
+docker compose -f 'docker-compose.yml' up -d --build
 ```
 
-Without global `turbo`, use your package manager:
+Services:
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8000`
+- Swagger docs: `http://localhost:8000/api`
+- GraphQL playground: `http://localhost:8000/graphql`
+- Prisma Studio: `http://localhost:5555`
+
+Stop the stack:
+
+```bash
+docker compose -f 'docker-compose.yml' down
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Run Locally
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Run commands from the repository root.
 
-```sh
-turbo build --filter=docs
+Build all apps and packages:
+
+```bash
+pnpm build
 ```
 
-Without global `turbo`:
+Run all apps in development mode:
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```bash
+pnpm dev
 ```
 
-### Develop
+Run tests:
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+pnpm test
 ```
 
-Without global `turbo`, use your package manager:
+## Useful Commands
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
+Run one app only:
+
+```bash
+pnpm --filter backend dev
+pnpm --filter frontend dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Build one app only:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
+```bash
+pnpm --filter backend build
+pnpm --filter frontend build
 ```
 
-Without global `turbo`:
+Run backend tests only:
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+pnpm --filter backend test
 ```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
