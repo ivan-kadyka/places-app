@@ -5,6 +5,7 @@ NestJS API for place search, weather forecasts, and outdoor activity scoring. It
 ## From The Root README
 
 Back to the [root README](../../README.md).
+or  [See Implementation Plan](../../docs/implementation-plan.md)
 
 ## Requirements
 

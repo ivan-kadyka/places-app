@@ -2,6 +2,8 @@
 
 A full-stack places recommendation application built as a **[Turborepo](https://turbo.build/repo) monorepo** using **TypeScript**.
 
+[See Implementation Plan](docs/implementation-plan.md)
+
 The project consists of:
 
 - **Backend:** [NestJS](https://nestjs.com/) REST API and GraphQL server running on [Node.js](https://nodejs.org/)
@@ -13,8 +15,8 @@ The application analyzes places and weather forecasts and provides activity reco
 
 ## Apps
 
-- [Backend.README](apps/backend/README.md) - NestJS API, Prisma, PostgreSQL, weather data, place search, and activity scoring.
-- [Frontend.README](apps/frontend/README.md) - Next.js UI served on port 3000.
+- [Backend.README](apps/backend/README.md) - NestJS API, Prisma, PostgreSQL, place search, weather data, and activity scoring.
+- [Frontend.README](apps/frontend/README.md) - Next.js Web UI
 
 ## Requirements
 
