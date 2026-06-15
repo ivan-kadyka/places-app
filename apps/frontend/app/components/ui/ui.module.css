@@ -1,0 +1,137 @@
+.card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 16px 45px rgba(20, 30, 43, 0.08);
+}
+
+.cardHeader {
+  display: grid;
+  gap: 6px;
+  padding: 20px 20px 0;
+}
+
+.cardTitle {
+  color: var(--foreground);
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.cardDescription {
+  color: var(--muted-foreground);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.cardContent {
+  padding: 20px;
+}
+
+.input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid var(--input);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--foreground);
+  font: inherit;
+  outline: none;
+  padding: 0 12px;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.input:focus-visible,
+.selectTrigger:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgba(24, 118, 105, 0.16);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 0 14px;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.selectTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--input);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--foreground);
+  font: inherit;
+  gap: 10px;
+  outline: none;
+  padding: 0 12px;
+  text-align: left;
+}
+
+.selectTrigger[data-placeholder] {
+  color: var(--muted-foreground);
+}
+
+.selectIcon {
+  color: var(--muted-foreground);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.selectContent {
+  z-index: 50;
+  max-height: 280px;
+  min-width: var(--radix-select-trigger-width);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 18px 44px rgba(20, 30, 43, 0.14);
+}
+
+.selectViewport {
+  padding: 6px;
+}
+
+.selectItem {
+  display: grid;
+  gap: 3px;
+  border-radius: 5px;
+  color: var(--foreground);
+  cursor: default;
+  font-size: 14px;
+  line-height: 1.25;
+  outline: none;
+  padding: 9px 10px;
+}
+
+.selectItem[data-highlighted] {
+  background: var(--accent);
+}
+
+.selectItemMeta {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
