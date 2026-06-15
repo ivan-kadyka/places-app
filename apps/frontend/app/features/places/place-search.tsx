@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -10,14 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import { Input } from "../../components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../../components/ui/command";
 import {
   getPlaceDetails,
   searchPlaces,
@@ -89,6 +89,7 @@ function DetailsPanel({ details }: { details: PlaceDetails }) {
 }
 
 export function PlaceSearch() {
+  const searchInputId = useId();
   const [searchText, setSearchText] = useState("");
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const debouncedSearchText = useDebouncedValue(searchText.trim(), 300);
@@ -100,7 +101,6 @@ export function PlaceSearch() {
   });
 
   const places = placesQuery.data ?? [];
-  const selectedValue = selectedPlace?.id ?? "";
 
   const detailsQuery = useQuery({
     queryKey: ["place-details", selectedPlace?.name],
@@ -126,7 +126,13 @@ export function PlaceSearch() {
     }
 
     return `${places.length} result${places.length === 1 ? "" : "s"} found.`;
-  }, [places.length, placesQuery.error, placesQuery.isError, placesQuery.isFetching, searchText]);
+  }, [
+    places.length,
+    placesQuery.error,
+    placesQuery.isError,
+    placesQuery.isFetching,
+    searchText,
+  ]);
 
   useEffect(() => {
     setSelectedPlace(null);
@@ -143,45 +149,43 @@ export function PlaceSearch() {
         <Card>
           <CardContent>
             <div className={styles.form}>
-              <label className={styles.field}>
-                <span>Search</span>
-                <Input
-                  autoComplete="off"
-                  onChange={(event) => setSearchText(event.target.value)}
-                  placeholder="Warsaw, Berlin, Tokyo..."
-                  value={searchText}
-                />
-              </label>
-
-              <label className={styles.field}>
-                <span>Result</span>
-                <Select
-                  disabled={places.length === 0 || placesQuery.isFetching}
-                  onValueChange={(value) => {
-                    setSelectedPlace(
-                      places.find((place) => place.id === value) ?? null,
-                    );
-                  }}
-                  value={selectedValue}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a place" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {places.map((place) => (
-                      <SelectItem
-                        key={place.id}
-                        meta={`${place.countryCode} · ${formatNumber(
-                          place.coordinate.latitude,
-                        )}, ${formatNumber(place.coordinate.longitude)}`}
-                        value={place.id}
-                      >
-                        {place.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </label>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel} htmlFor={searchInputId}>
+                  Search
+                </label>
+                <Command>
+                  <CommandInput
+                    autoComplete="off"
+                    id={searchInputId}
+                    onChange={(event) => setSearchText(event.target.value)}
+                    placeholder="Warsaw, Berlin, Tokyo..."
+                    value={searchText}
+                  />
+                  <CommandList aria-label="Place results">
+                    {places.length === 0 ? (
+                      <CommandEmpty>{helperText}</CommandEmpty>
+                    ) : null}
+                    {places.length > 0 ? (
+                      <CommandGroup heading="Results">
+                        {places.map((place) => (
+                          <CommandItem
+                            aria-selected={selectedPlace?.id === place.id}
+                            key={place.id}
+                            onClick={() => setSelectedPlace(place)}
+                          >
+                            <span>{place.name}</span>
+                            <span className={styles.resultMeta}>
+                              {place.countryCode} ·{" "}
+                              {formatNumber(place.coordinate.latitude)},{" "}
+                              {formatNumber(place.coordinate.longitude)}
+                            </span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    ) : null}
+                  </CommandList>
+                </Command>
+              </div>
 
               <div className={styles.formFooter}>
                 <p className={styles.helper}>{helperText}</p>
