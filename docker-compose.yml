@@ -48,6 +48,8 @@ services:
       context: .
       dockerfile: apps/frontend/Dockerfile
     container_name: places-app-frontend
+    environment:
+      BACKEND_GRAPHQL_ENDPOINT: http://backend:8000/graphql
     ports:
       - "3000:3000"
     depends_on:

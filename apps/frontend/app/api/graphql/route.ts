@@ -6,13 +6,22 @@ const graphqlEndpoint =
 export async function POST(request: Request) {
   const body = await request.text();
 
-  const response = await fetch(graphqlEndpoint, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body,
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(graphqlEndpoint, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body,
+    });
+  } catch {
+    return NextResponse.json(
+      { errors: [{ message: "Backend GraphQL endpoint is unavailable." }] },
+      { status: 502 },
+    );
+  }
 
   const payload = await response.text();
 
