@@ -1,4 +1,4 @@
-# Weather App Backend
+# Place App Backend
 
 NestJS API for place search, weather forecasts, and outdoor activity scoring. It uses PostgreSQL through Prisma and fetches weather/place data from Open-Meteo.
 

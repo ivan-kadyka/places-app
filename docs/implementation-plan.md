@@ -186,10 +186,11 @@ Define interfaces:
 ---
 
 ## TODO:
+
 - More input & output validation/handling
 - Caching strategies(LRU or LFU) to avoid always interaction with DB layer
 - Docker image size optimization
 - More unit, functional, e2e tests
 - Setup CI/CD: automatic builds, tests, deployment to cloud provider(AWS)
-- Implement Frontend Web UI
+- Improve Frontend Web UI
 - More documentation
