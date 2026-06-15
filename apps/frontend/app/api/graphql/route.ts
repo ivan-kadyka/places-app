@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+//TODO: need get from env file
 const graphqlEndpoint =
   process.env.BACKEND_GRAPHQL_ENDPOINT ?? "http://localhost:8000/graphql";
 

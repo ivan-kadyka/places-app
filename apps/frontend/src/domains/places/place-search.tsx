@@ -2,84 +2,19 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useId, useMemo, useState } from "react";
-
-
+import { Card, CardContent } from "../../infra/ui/card";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "../../infra/ui/card";
-import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "../../infra/ui/command";
-import { PlaceDetails, Place, searchPlaces, getPlaceDetails } from "../../lib/graphql";
-
-function useDebouncedValue(value: string, delayMs: number) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const timeout = window.setTimeout(() => setDebouncedValue(value), delayMs);
-
-    return () => window.clearTimeout(timeout);
-  }, [delayMs, value]);
-
-  return debouncedValue;
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("en", {
-    dateStyle: "medium",
-  }).format(new Date(value));
-}
-
-function formatNumber(value: number) {
-  return new Intl.NumberFormat("en", {
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-function formatActivityType(value: string) {
-  return value
-    .replace(/[_-]/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
-function DetailsPanel({ details }: { details: PlaceDetails }) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{details.name}</CardTitle>
-        <CardDescription>
-          Forecast window: {formatDate(details.dateRange.from)} to{" "}
-          {formatDate(details.dateRange.to)}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-2.5">
-          {details.activities.map((activity) => (
-            <div
-              className="flex items-center justify-between gap-4 rounded-lg border border-border bg-[#fbfefd] p-3.5"
-              key={activity.type}
-            >
-              <div>
-                <div className="text-[15px] font-semibold text-foreground">
-                  {formatActivityType(activity.type)}
-                </div>
-                <div className="mt-[3px] text-[13px] text-muted-foreground">
-                  {activity.score.level}
-                </div>
-              </div>
-              <div className="whitespace-nowrap text-[22px] font-bold leading-none text-primary">
-                {activity.score.percentage}%
-              </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "../../infra/ui/command";
+import { Place, searchPlaces, getPlaceDetails } from "../../lib/graphql";
+import PlaceDetailsPanel from "./place-details-panel";
+import { useDebouncedValue } from "../../infra/hooks/useDebouncedValue";
+import { formatNumber } from "./utils/format";
 
 export function PlaceSearch() {
   const searchInputId = useId();
@@ -132,10 +67,10 @@ export function PlaceSearch() {
   }, [debouncedSearchText]);
 
   return (
-    <main className="min-h-svh bg-[linear-gradient(180deg,rgba(241,248,247,0.94),rgba(248,250,252,1))] px-3.5 py-8 text-foreground sm:px-5 sm:py-14">
-      <section className="mx-auto grid w-full max-w-[840px] gap-[18px]">
+    <div className="min-h-svh px-3.5 py-8 text-foreground sm:px-5 sm:py-14">
+      <section className="mx-auto grid w-full max-w-210 gap-4.5">
         <div className="grid gap-2.5 px-0 pb-3 pt-2">
-          <h1 className="max-w-[720px] text-[clamp(32px,5vw,56px)] font-bold leading-[1.04]">
+          <h1 className="font-bold text-3xl text-center">
             Find place activities
           </h1>
         </div>
@@ -202,9 +137,9 @@ export function PlaceSearch() {
         ) : null}
 
         {detailsQuery.data ? (
-          <DetailsPanel details={detailsQuery.data} />
+          <PlaceDetailsPanel details={detailsQuery.data} />
         ) : null}
       </section>
-    </main>
+    </div>
   );
 }

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import ReactQueryProvider from "../src/infra/tanstack-query/react-query-provider";
-import ReactQueryDevtoolPanel from "../src/infra/tanstack-query/react-query-devtool-panel";
 import { PropsWithChildren } from "react";
+import ReactQueryDevtoolPanel from "../src/infra/tanstack-query/react-query-devtool-panel";
+import ReactQueryProvider from "../src/infra/tanstack-query/react-query-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
