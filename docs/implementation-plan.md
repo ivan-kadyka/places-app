@@ -186,7 +186,7 @@ Define interfaces:
 ---
 
 ## TODO:
-
+- More input & output validation/handling
 - Caching strategies(LRU or LFU) to avoid always interaction with DB layer
 - Docker image size optimization
 - More unit, functional, e2e tests
