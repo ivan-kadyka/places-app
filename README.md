@@ -82,7 +82,6 @@ Services:
 - Backend API: `http://localhost:8000`
 - Swagger docs: `http://localhost:8000/api`
 - GraphQL playground: `http://localhost:8000/graphql`
-- Prisma Studio: `http://localhost:5555`
 
 Stop the stack:
 
