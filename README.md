@@ -50,6 +50,12 @@ Build all apps and packages:
 pnpm build
 ```
 
+Apply database migrations:
+
+```bash
+pnpm migrate
+```
+
 Run all apps in development mode:
 
 ```bash
@@ -76,7 +82,6 @@ Services:
 - Backend API: `http://localhost:8000`
 - Swagger docs: `http://localhost:8000/api`
 - GraphQL playground: `http://localhost:8000/graphql`
-- Prisma Studio: `http://localhost:5555`
 
 Stop the stack:
 

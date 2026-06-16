@@ -1,49 +1,48 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS deps
 
 WORKDIR /app
 
-RUN npm install -g pnpm@9.0.0
+RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
-COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
-COPY package.json ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/backend/package.json ./apps/backend/package.json
 COPY packages/ ./packages/
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --filter backend...
+
+FROM deps AS builder
 
 COPY apps/backend/ ./apps/backend/
 
 WORKDIR /app/apps/backend
+
 RUN pnpm run db:generate
 RUN pnpm run build
 
-# ---
-
 FROM node:20-alpine AS runner
+
+RUN apk add --no-cache tini
 
 WORKDIR /app
 
-RUN npm install -g pnpm@9.0.0
+RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
-COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
-COPY package.json ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/backend/package.json ./apps/backend/package.json
 COPY packages/ ./packages/
 
-RUN pnpm install --prod --frozen-lockfile
-
-# Install prisma into an isolated directory so it doesn't conflict with prod deps
-RUN npm install --prefix /prisma-cli prisma@7.8.0
+RUN pnpm install --frozen-lockfile --prod --filter backend...
 
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
-COPY --from=builder /app/apps/backend/prisma ./apps/backend/prisma
+COPY --from=builder /app/apps/backend/prisma/migrations ./apps/backend/prisma/migrations
+COPY --from=builder /app/apps/backend/prisma/schema.prisma ./apps/backend/prisma/schema.prisma
+COPY --from=builder /app/apps/backend/prisma.config.ts ./apps/backend/prisma.config.ts
 
 WORKDIR /app/apps/backend
 
-COPY --from=builder /app/apps/backend/prisma.config.ts ./prisma.config.ts
+ENV NODE_ENV=production
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "NODE_PATH=/prisma-cli/node_modules /prisma-cli/node_modules/.bin/prisma migrate deploy --config=./prisma.config.ts && node dist/src/main.js"]
+ENTRYPOINT ["tini", "--"]
+CMD ["node", "dist/src/main.js"]

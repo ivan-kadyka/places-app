@@ -38,6 +38,12 @@ Build all apps and packages:
 pnpm build
 ```
 
+Apply database migrations:
+
+```bash
+pnpm migrate
+```
+
 Run all apps in development mode:
 
 ```bash
