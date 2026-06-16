@@ -1,4 +1,3 @@
-# ─── Stage 1: deps ────────────────────────────────────────────────────────────
 FROM node:20-alpine AS deps
 
 WORKDIR /app
@@ -9,22 +8,17 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/backend/package.json ./apps/backend/package.json
 COPY packages/ ./packages/
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --filter backend...
 
-# ─── Stage 2: builder ─────────────────────────────────────────────────────────
 FROM deps AS builder
 
 COPY apps/backend/ ./apps/backend/
 
 WORKDIR /app/apps/backend
 
-# Step 3 from article: generate prisma client at build time (no DB needed)
 RUN pnpm run db:generate
-
-# Step 4: build the app
 RUN pnpm run build
 
-# ─── Stage 3: runner ──────────────────────────────────────────────────────────
 FROM node:20-alpine AS runner
 
 RUN apk add --no-cache tini
@@ -37,16 +31,18 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/backend/package.json ./apps/backend/package.json
 COPY packages/ ./packages/
 
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --prod --filter backend...
 
-# Copy build output and prisma schema from builder
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
-COPY --from=builder /app/apps/backend/prisma ./apps/backend/prisma
+COPY --from=builder /app/apps/backend/prisma/migrations ./apps/backend/prisma/migrations
+COPY --from=builder /app/apps/backend/prisma/schema.prisma ./apps/backend/prisma/schema.prisma
 COPY --from=builder /app/apps/backend/prisma.config.ts ./apps/backend/prisma.config.ts
 
 WORKDIR /app/apps/backend
 
+ENV NODE_ENV=production
+
 EXPOSE 8000
 
-# Step 5 from article: migrate deploy + start via a single npm script, not shell &&
+ENTRYPOINT ["tini", "--"]
 CMD ["node", "dist/src/main.js"]
