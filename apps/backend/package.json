@@ -8,6 +8,7 @@
   "scripts": {
     "build": "nest build",
     "prebuild": "prisma generate",
+    "migrate": "prisma migrate deploy",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
