@@ -12,7 +12,7 @@ or  [👉 See Implementation Plan](../../docs/implementation-plan.md)
 - Node.js 20+
 - pnpm 9
 
-Install dependencies from the repository root:
+Install dependencies from the current directory:
 
 ```bash
 pnpm install
@@ -30,7 +30,7 @@ Update `.env` and set the `DATABASE_URL` variable to your PostgreSQL connection 
 
 ## Run Locally
 
-Run commands from the repository root.
+Run commands from the current directory.
 
 Build all apps and packages:
 
