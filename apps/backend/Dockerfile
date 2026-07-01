@@ -45,4 +45,4 @@ ENV NODE_ENV=production
 EXPOSE 8000
 
 ENTRYPOINT ["tini", "--"]
-CMD ["node", "dist/src/main.js"]
+CMD ["pnpm", "run", "start:migrate:prod"]
